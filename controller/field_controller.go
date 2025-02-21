@@ -18,14 +18,14 @@ func NewFieldController(fieldService service.FieldService) FieldController {
 	}
 }
 
-func (mc *FieldController) RegisterRoutes(rg *gin.RouterGroup) {
-	router := rg.Group("/field")
-	router.GET("", mc.getAllFields)
-	router.GET("/types", mc.getFieldTypes)
+func (fc *FieldController) RegisterRoutes(rg *gin.RouterGroup) {
+	router := rg.Group("/field/")
+	router.GET("", fc.getAllFields)
+	router.GET("types", fc.getFieldTypes)
 }
 
-func (mc *FieldController) getAllFields(c *gin.Context) {
-	fields, err := mc.fieldService.GetAll()
+func (fc *FieldController) getAllFields(c *gin.Context) {
+	fields, err := fc.fieldService.GetAll()
 	if err != nil {
 		fmt.Printf(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
@@ -35,7 +35,7 @@ func (mc *FieldController) getAllFields(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, fields)
 }
 
-func (mc *FieldController) getFieldTypes(c *gin.Context) {
+func (fc *FieldController) getFieldTypes(c *gin.Context) {
 	fieldTypes := model.GetAllFieldType()
 
 	c.IndentedJSON(http.StatusOK, fieldTypes)

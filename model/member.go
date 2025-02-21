@@ -5,6 +5,6 @@ import (
 )
 
 type Member struct {
-	ID   primitive.ObjectID     `bson:"_id,omitempty" json:"id"`
-	Data map[string]interface{} `bson:"data" json:"data"`
+	Identifier primitive.ObjectID     `json:"id,omitempty" bson:"_id,omitempty"`
+	Data       map[string]interface{} `bson:"data" json:"data"`
 }

@@ -12,6 +12,7 @@ const (
 	PhoneNumber FieldType = "phone_number"
 	MultiSelect FieldType = "multi_select"
 	Boolean     FieldType = "boolean"
+	Date        FieldType = "date"
 )
 
 func GetAllFieldType() []FieldType {
@@ -23,6 +24,7 @@ func GetAllFieldType() []FieldType {
 		PhoneNumber,
 		MultiSelect,
 		Boolean,
+		Date,
 	}
 }
 
