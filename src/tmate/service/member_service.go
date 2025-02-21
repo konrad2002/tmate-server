@@ -1,7 +1,21 @@
 package service
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/konrad2002/tmate-server/repository"
+)
 
-func PrintTest() {
+type MemberService struct {
+	memberRepository repository.MemberRepository
+}
+
+func NewMemberService(mr repository.MemberRepository) MemberService {
+	return MemberService{
+		memberRepository: mr,
+	}
+}
+
+func (ms *MemberService) PrintTest() string {
 	fmt.Println("test")
+	return "test"
 }

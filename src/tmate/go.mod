@@ -1,4 +1,4 @@
-module github.com/konrad2002/tmate
+module github.com/konrad2002/tmate-server
 
 go 1.20
 
