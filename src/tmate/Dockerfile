@@ -1,0 +1,19 @@
+# syntax=docker/dockerfile:1
+
+FROM golang:1.20-alpine
+
+WORKDIR /app
+
+COPY tmate-server /app/service
+RUN chmod +x /app/service
+RUN mkdir /app/logs
+
+ENV TMATE_PORT=8080
+ENV TZ=Europe/Berlin
+
+RUN apk add tzdata
+RUN ln -s /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+
+EXPOSE 8080
+
+ENTRYPOINT [ "./service" ]
