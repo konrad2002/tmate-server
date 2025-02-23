@@ -19,9 +19,11 @@ var (
 
 	ms service.MemberService
 	fs service.FieldService
+	qs service.QueryService
 
 	mc controller.MemberController
 	fc controller.FieldController
+	qc controller.QueryController
 
 	ctx         context.Context
 	mongoClient *mongo.Client
@@ -42,12 +44,15 @@ func init() {
 
 	mr := repository.NewMemberRepository(mongoCon)
 	fr := repository.NewFieldRepository(mongoCon)
+	qr := repository.NewQueryRepository(mongoCon)
 
-	ms = service.NewMemberService(mr)
 	fs = service.NewFieldService(fr)
+	qs = service.NewQueryService(qr)
+	ms = service.NewMemberService(mr, qs)
 
 	mc = controller.NewMemberController(ms)
 	fc = controller.NewFieldController(fs)
+	qc = controller.NewQueryController(qs)
 
 	server = gin.Default()
 }
@@ -64,6 +69,7 @@ func main() {
 
 	mc.RegisterRoutes(basePath)
 	fc.RegisterRoutes(basePath)
+	qc.RegisterRoutes(basePath)
 
 	port := os.Getenv("TMATE_PORT")
 
