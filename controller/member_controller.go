@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/konrad2002/tmate-server/dto"
 	"github.com/konrad2002/tmate-server/service"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
@@ -49,12 +50,18 @@ func (mc *MemberController) runMemberQuery(c *gin.Context) {
 		return
 	}
 
-	members, err := mc.memberService.GetAllByQuery(queryId)
+	members, fields, query, err := mc.memberService.GetAllByQuery(queryId)
 	if err != nil {
 		fmt.Printf(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, members)
+	result := dto.QueryResultDto{
+		Members: *members,
+		Fields:  *fields,
+		Query:   *query,
+	}
+
+	c.IndentedJSON(http.StatusOK, result)
 }

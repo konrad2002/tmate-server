@@ -47,9 +47,17 @@ func (qs *QueryService) SaveExample() (model.Query, error) {
 		},
 	}
 
+	projection := bson.D{
+		{"data.vorname", 1},
+		{"data.nachname", 1},
+		{"data.wohnort", 1},
+		{"data.aufgaben", 1},
+	}
+
 	query := model.Query{
 		Name:       "Example Query",
-		Query:      request,
+		Filter:     request,
+		Projection: projection,
 		Public:     true,
 		CreatedAt:  time.Now(),
 		ModifiedAt: time.Now(),
