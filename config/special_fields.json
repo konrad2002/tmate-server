@@ -1,0 +1,12 @@
+{
+  "first_name": "vorname",
+  "last_name": "nachname",
+  "e_mail": "e_mail",
+  "e_mail_2": "e_mail_eltern",
+  "address": {
+    "street": "strasse",
+    "number": "nummer",
+    "city": "wohnort",
+    "postal_code": "plz"
+  }
+}

@@ -19,10 +19,12 @@ var (
 
 	ms service.MemberService
 	fs service.FieldService
+	cs service.ConfigService
 	qs service.QueryService
 
 	mc controller.MemberController
 	fc controller.FieldController
+	cc controller.ConfigController
 	qc controller.QueryController
 
 	ctx         context.Context
@@ -48,10 +50,12 @@ func init() {
 
 	fs = service.NewFieldService(fr)
 	qs = service.NewQueryService(qr)
+	cs = service.NewConfigService()
 	ms = service.NewMemberService(mr, qs, fs)
 
 	mc = controller.NewMemberController(ms)
 	fc = controller.NewFieldController(fs)
+	cc = controller.NewConfigController(cs)
 	qc = controller.NewQueryController(qs)
 
 	server = gin.Default()
@@ -69,6 +73,7 @@ func main() {
 
 	mc.RegisterRoutes(basePath)
 	fc.RegisterRoutes(basePath)
+	cc.RegisterRoutes(basePath)
 	qc.RegisterRoutes(basePath)
 
 	port := os.Getenv("TMATE_PORT")
