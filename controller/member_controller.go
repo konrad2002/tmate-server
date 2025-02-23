@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/konrad2002/tmate-server/dto"
+	"github.com/konrad2002/tmate-server/model"
 	"github.com/konrad2002/tmate-server/service"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
@@ -21,15 +22,21 @@ func NewMemberController(memberService service.MemberService) MemberController {
 
 func (mc *MemberController) RegisterRoutes(rg *gin.RouterGroup) {
 	router := rg.Group("/member/")
+
 	router.GET("", mc.getAllMembers)
+	router.GET("id/:id", mc.getMemberById)
 	router.GET("query/:queryId", mc.runMemberQuery)
-	router.GET("test", mc.getTest)
+
+	router.POST("", mc.addMember)
+
+	router.PUT("", mc.updateMember)
+
+	router.OPTIONS("", mc.ok)
+
 }
 
-func (mc *MemberController) getTest(c *gin.Context) {
-	test := mc.memberService.PrintTest()
-
-	c.IndentedJSON(http.StatusOK, test)
+func (mc *MemberController) ok(c *gin.Context) {
+	c.Status(http.StatusOK)
 }
 
 func (mc *MemberController) getAllMembers(c *gin.Context) {
@@ -64,4 +71,57 @@ func (mc *MemberController) runMemberQuery(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, result)
+}
+
+func (mc *MemberController) getMemberById(c *gin.Context) {
+	id, convErr := primitive.ObjectIDFromHex(c.Param("id"))
+	if convErr != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given id was not of type ObjectID"})
+		return
+	}
+
+	member, err := mc.memberService.GetById(id)
+	if err != nil {
+		fmt.Printf(err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, member)
+}
+
+func (mc *MemberController) addMember(c *gin.Context) {
+	var member model.Member
+	if err := c.BindJSON(&member); err != nil {
+		fmt.Printf(err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	r, err := mc.memberService.AddMember(member)
+	if err != nil {
+		fmt.Printf(err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, r)
+}
+
+func (mc *MemberController) updateMember(c *gin.Context) {
+	var member model.Member
+	if err := c.BindJSON(&member); err != nil {
+		fmt.Printf(err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	r, err := mc.memberService.UpdateMember(member)
+	if err != nil {
+		fmt.Printf(err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, r)
 }

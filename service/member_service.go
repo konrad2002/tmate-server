@@ -32,8 +32,8 @@ func (ms *MemberService) GetAll() ([]model.Member, error) {
 	return ms.memberRepository.GetMembersByBsonDocument(bson.D{})
 }
 
-func (ms *MemberService) GetById(id primitive.ObjectID) ([]model.Member, error) {
-	return ms.memberRepository.GetMembersByBsonDocument(bson.D{{"_id", id}})
+func (ms *MemberService) GetById(id primitive.ObjectID) (model.Member, error) {
+	return ms.memberRepository.GetMemberByBsonDocument(bson.D{{"_id", id}})
 }
 
 func (ms *MemberService) GetAllByQuery(queryId primitive.ObjectID) (*[]model.Member, *[]model.Field, *model.Query, error) {
@@ -59,4 +59,12 @@ func (ms *MemberService) GetAllByQuery(queryId primitive.ObjectID) (*[]model.Mem
 	}
 
 	return &members, &fields, &query, nil
+}
+
+func (ms *MemberService) AddMember(member model.Member) (model.Member, error) {
+	return ms.memberRepository.SaveMember(member)
+}
+
+func (ms *MemberService) UpdateMember(member model.Member) (model.Member, error) {
+	return ms.memberRepository.UpdateMember(member)
 }
