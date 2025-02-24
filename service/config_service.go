@@ -8,6 +8,7 @@ import (
 
 var configDir = "config/"
 var specialFieldsFile = configDir + "special_fields.json"
+var configFile = configDir + "config.json"
 
 type ConfigService struct {
 }
@@ -40,6 +41,18 @@ func (cs *ConfigService) InitConfig() error {
 		return err
 	}
 
+	config := model.Config{}
+
+	configJson, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile(configFile, configJson, 0644)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -57,4 +70,20 @@ func (cs *ConfigService) GetSpecialFields() (*model.SpecialFields, error) {
 	}
 
 	return &specialFields, nil
+}
+
+func (cs *ConfigService) GetConfig() (*model.Config, error) {
+	jsonString, err := os.ReadFile(configFile)
+	if err != nil {
+		return nil, err
+	}
+
+	var config model.Config
+
+	err = json.Unmarshal(jsonString, &config)
+	if err != nil {
+		return nil, err
+	}
+
+	return &config, nil
 }

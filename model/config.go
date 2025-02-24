@@ -1,5 +1,7 @@
 package model
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 type SpecialFields struct {
 	FirstName string        `json:"first_name"`
 	LastName  string        `json:"last_name"`
@@ -13,4 +15,8 @@ type AddressFields struct {
 	Number     string `json:"number"`
 	City       string `json:"city"`
 	PostalCode string `json:"postal_code"`
+}
+
+type Config struct {
+	DefaultQuery primitive.ObjectID `json:"default_query"`
 }
