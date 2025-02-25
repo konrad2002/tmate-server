@@ -110,7 +110,17 @@ func (mc *MemberController) addMember(c *gin.Context) {
 		return
 	}
 
-	r, err := mc.memberService.AddMember(member)
+	var familyMemberId primitive.ObjectID
+	if c.Query("family_member_id") != "" {
+		var convErr error
+		familyMemberId, convErr = primitive.ObjectIDFromHex(c.Query("family_member_id"))
+		if convErr != nil {
+			c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given id was not of type ObjectID"})
+			return
+		}
+	}
+
+	r, err := mc.memberService.AddMember(member, familyMemberId)
 	if err != nil {
 		println(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
