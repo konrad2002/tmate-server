@@ -152,48 +152,11 @@ func (ms *MemberService) GetAllByQuery(queryId primitive.ObjectID) (*[]model.Mem
 
 func (ms *MemberService) AddMember(member model.Member, familyMemberId primitive.ObjectID) (model.Member, error) {
 	if !familyMemberId.IsZero() {
-		// get family field
-		familyField, err := ms.fieldService.GetFirstFieldWithType(model.Family)
+		var err error
+		member, err = ms.createOrAddFamily(member, familyMemberId)
 		if err != nil {
 			return model.Member{}, err
 		}
-
-		if familyField.Name == "" {
-			err := errors.New(fmt.Sprintf("no family field defined!"))
-			return model.Member{}, err
-		}
-
-		// get member family
-		familyMember, err := ms.GetById(familyMemberId)
-		if err != nil {
-			println(err.Error())
-			err2 := errors.New(fmt.Sprintf("failed to lookup family member: %s\n", familyMemberId))
-			return model.Member{}, err2
-		}
-
-		familyId, has, err := ms.getFamilyIdFromMember(familyMember, familyField.Name)
-		if err != nil {
-			return model.Member{}, err
-		}
-
-		// if no family, create one
-		if !has {
-			// generate id
-			familyId = int(time.Now().UnixNano())
-
-			// assign to family member
-			familyMember.Data[familyField.Name] = familyId
-
-			// save family member
-			_, err := ms.memberRepository.UpdateMember(familyMember)
-			if err != nil {
-				err2 := errors.New(fmt.Sprintf("failed to save family member (%s): %e\n", familyMemberId, err))
-				return model.Member{}, err2
-			}
-		}
-
-		// save number
-		member.Data[familyField.Name] = familyId
 	}
 
 	return ms.memberRepository.SaveMember(member)
@@ -232,6 +195,61 @@ func (ms *MemberService) getFamilyIdFromMember(member model.Member, familyFieldN
 
 }
 
-func (ms *MemberService) UpdateMember(member model.Member) (model.Member, error) {
+func (ms *MemberService) UpdateMember(member model.Member, familyMemberId primitive.ObjectID) (model.Member, error) {
+	if !familyMemberId.IsZero() {
+		var err error
+		member, err = ms.createOrAddFamily(member, familyMemberId)
+		if err != nil {
+			return model.Member{}, err
+		}
+	}
+
 	return ms.memberRepository.UpdateMember(member)
+}
+
+func (ms *MemberService) createOrAddFamily(member model.Member, familyMemberId primitive.ObjectID) (model.Member, error) {
+	// get family field
+	familyField, err := ms.fieldService.GetFirstFieldWithType(model.Family)
+	if err != nil {
+		return model.Member{}, err
+	}
+
+	if familyField.Name == "" {
+		err := errors.New(fmt.Sprintf("no family field defined!"))
+		return model.Member{}, err
+	}
+
+	// get member family
+	familyMember, err := ms.GetById(familyMemberId)
+	if err != nil {
+		println(err.Error())
+		err2 := errors.New(fmt.Sprintf("failed to lookup family member: %s\n", familyMemberId))
+		return model.Member{}, err2
+	}
+
+	familyId, has, err := ms.getFamilyIdFromMember(familyMember, familyField.Name)
+	if err != nil {
+		return model.Member{}, err
+	}
+
+	// if no family, create one
+	if !has {
+		// generate id
+		familyId = int(time.Now().UnixNano())
+
+		// assign to family member
+		familyMember.Data[familyField.Name] = familyId
+
+		// save family member
+		_, err := ms.memberRepository.UpdateMember(familyMember)
+		if err != nil {
+			err2 := errors.New(fmt.Sprintf("failed to save family member (%s): %e\n", familyMemberId, err))
+			return model.Member{}, err2
+		}
+	}
+
+	// save number
+	member.Data[familyField.Name] = familyId
+
+	return member, nil
 }
