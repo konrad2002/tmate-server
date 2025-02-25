@@ -94,6 +94,10 @@ func (ms *MemberService) GetFamilies() (*dto.FamilyListDto, error) {
 				return nil, err
 			}
 
+			if familyId == 0 {
+				continue
+			}
+
 			if families.Families[familyId] == nil {
 				families.Families[familyId] = &dto.Family{
 					MemberCount: 0,
