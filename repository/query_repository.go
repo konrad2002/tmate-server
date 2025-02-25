@@ -81,10 +81,11 @@ func (qr *QueryRepository) GetQueryByBsonDocumentWithOptions(d interface{}, quer
 	return model.Query{}, errors.New("no entry found")
 }
 
-func (qr *QueryRepository) Save(query model.Query) (model.Query, error) {
+func (qr *QueryRepository) SaveQuery(query model.Query) (model.Query, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	query.CreatedAt = time.Now()
 	query.ModifiedAt = time.Now()
 
 	r, err := qr.collection.InsertOne(ctx, query)
@@ -93,4 +94,18 @@ func (qr *QueryRepository) Save(query model.Query) (model.Query, error) {
 	}
 
 	return qr.GetQueryByBsonDocument(bson.D{{"_id", r.InsertedID.(primitive.ObjectID)}})
+}
+
+func (qr *QueryRepository) UpdateQuery(query model.Query) (model.Query, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	query.ModifiedAt = time.Now()
+
+	_, err := qr.collection.ReplaceOne(ctx, bson.D{{"_id", query.Identifier}}, query)
+	if err != nil {
+		return model.Query{}, err
+	}
+
+	return qr.GetQueryByBsonDocument(bson.D{{"_id", query.Identifier}})
 }

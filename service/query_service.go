@@ -63,5 +63,13 @@ func (qs *QueryService) SaveExample() (model.Query, error) {
 		ModifiedAt: time.Now(),
 	}
 
-	return qs.queryRepository.Save(query)
+	return qs.queryRepository.SaveQuery(query)
+}
+
+func (qs *QueryService) AddQuery(query model.Query) (model.Query, error) {
+	return qs.queryRepository.SaveQuery(query)
+}
+
+func (qs *QueryService) UpdateQuery(query model.Query) (model.Query, error) {
+	return qs.queryRepository.UpdateQuery(query)
 }
