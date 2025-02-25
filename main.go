@@ -51,7 +51,7 @@ func init() {
 	fs = service.NewFieldService(fr)
 	qs = service.NewQueryService(qr)
 	cs = service.NewConfigService()
-	ms = service.NewMemberService(mr, qs, fs)
+	ms = service.NewMemberService(mr, qs, fs, cs)
 
 	mc = controller.NewMemberController(ms)
 	fc = controller.NewFieldController(fs)

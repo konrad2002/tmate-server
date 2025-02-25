@@ -26,6 +26,7 @@ func (mc *MemberController) RegisterRoutes(rg *gin.RouterGroup) {
 	router.GET("", mc.getAllMembers)
 	router.GET("id/:id", mc.getMemberById)
 	router.GET("query/:queryId", mc.runMemberQuery)
+	router.GET("families", mc.getFamilies)
 
 	router.POST("", mc.addMember)
 
@@ -50,6 +51,17 @@ func (mc *MemberController) getAllMembers(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, members)
 }
 
+func (mc *MemberController) getFamilies(c *gin.Context) {
+	families, err := mc.memberService.GetFamilies()
+	if err != nil {
+		println(err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, families)
+}
+
 func (mc *MemberController) runMemberQuery(c *gin.Context) {
 	queryId, convErr := primitive.ObjectIDFromHex(c.Param("queryId"))
 	if convErr != nil {
@@ -59,7 +71,7 @@ func (mc *MemberController) runMemberQuery(c *gin.Context) {
 
 	members, fields, query, err := mc.memberService.GetAllByQuery(queryId)
 	if err != nil {
-		fmt.Printf(err.Error())
+		println(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
@@ -82,7 +94,7 @@ func (mc *MemberController) getMemberById(c *gin.Context) {
 
 	member, err := mc.memberService.GetById(id)
 	if err != nil {
-		fmt.Printf(err.Error())
+		println(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
@@ -93,14 +105,14 @@ func (mc *MemberController) getMemberById(c *gin.Context) {
 func (mc *MemberController) addMember(c *gin.Context) {
 	var member model.Member
 	if err := c.BindJSON(&member); err != nil {
-		fmt.Printf(err.Error())
+		println(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
 	r, err := mc.memberService.AddMember(member)
 	if err != nil {
-		fmt.Printf(err.Error())
+		println(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
@@ -111,14 +123,14 @@ func (mc *MemberController) addMember(c *gin.Context) {
 func (mc *MemberController) updateMember(c *gin.Context) {
 	var member model.Member
 	if err := c.BindJSON(&member); err != nil {
-		fmt.Printf(err.Error())
+		println(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
 	r, err := mc.memberService.UpdateMember(member)
 	if err != nil {
-		fmt.Printf(err.Error())
+		println(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}

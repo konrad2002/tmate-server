@@ -3,6 +3,7 @@
   "last_name": "nachname",
   "e_mail": "e_mail",
   "e_mail_2": "e_mail_eltern",
+  "family": "familie",
   "address": {
     "street": "strasse",
     "number": "nummer",

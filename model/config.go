@@ -7,6 +7,7 @@ type SpecialFields struct {
 	LastName  string        `json:"last_name"`
 	EMail     string        `json:"e_mail"`
 	EMail2    string        `json:"e_mail_2"`
+	Family    string        `json:"family"`
 	Address   AddressFields `json:"address"`
 }
 

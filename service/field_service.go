@@ -22,6 +22,10 @@ func (fs *FieldService) GetAll() ([]model.Field, error) {
 	return fs.fieldRepository.GetFieldsByBsonDocument(bson.D{})
 }
 
+func (fs *FieldService) GetFirstFieldWithType(fieldType model.FieldType) (model.Field, error) {
+	return fs.fieldRepository.GetFieldByBsonDocument(bson.D{{"type", fieldType}})
+}
+
 func (fs *FieldService) GetAllForQuery(query model.Query) ([]model.Field, error) {
 	var fieldNames []string
 	for _, e := range query.Projection {

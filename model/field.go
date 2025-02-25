@@ -13,6 +13,7 @@ const (
 	MultiSelect FieldType = "multi_select"
 	Boolean     FieldType = "boolean"
 	Date        FieldType = "date"
+	Family      FieldType = "family"
 )
 
 func GetAllFieldType() []FieldType {
@@ -25,6 +26,7 @@ func GetAllFieldType() []FieldType {
 		MultiSelect,
 		Boolean,
 		Date,
+		Family,
 	}
 }
 
