@@ -142,7 +142,9 @@ func (ms *MemberService) GetAllByQuery(queryId primitive.ObjectID, sortField str
 
 	members, err := ms.memberRepository.GetMembersByBsonDocumentWithOptions(
 		query.Filter,
-		options.Find().SetProjection(query.Projection).SetSort(query.Sort),
+		options.Find().SetSort(query.Sort),
+		//  TODO: table editing requires all fields, but in normal table, projection could be applied
+		//options.Find().SetProjection(query.Projection).SetSort(query.Sort),
 	)
 	if err != nil {
 		fmt.Println("failed to retrieve members")
