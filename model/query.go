@@ -10,6 +10,7 @@ type Query struct {
 	Identifier  primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	Name        string             `json:"name,omitempty" bson:"name,omitempty"`
 	Filter      bson.D             `json:"filter,omitempty" bson:"filter"`
+	FilterJson  interface{}        `json:"filter_json,omitempty" bson:"-"`
 	Projection  bson.D             `json:"projection,omitempty" bson:"projection"`
 	Sort        bson.D             `json:"sort,omitempty" bson:"sort"`
 	OwnerUserId primitive.ObjectID `json:"owner_user_id,omitempty" bson:"owner_user_id,omitempty"`

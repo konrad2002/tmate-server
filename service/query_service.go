@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/konrad2002/tmate-server/misc"
 	"github.com/konrad2002/tmate-server/model"
 	"github.com/konrad2002/tmate-server/repository"
 	"go.mongodb.org/mongo-driver/bson"
@@ -43,6 +44,14 @@ func (qs *QueryService) SaveExample() (model.Query, error) {
 					},
 				},
 				bson.D{{"data.dsv_lizenz_aktiv", bson.D{{"$ne", false}}}},
+				bson.D{
+					{"$or",
+						bson.A{
+							bson.D{{"data.wohnort", "Olbernhau"}},
+							bson.D{{"data.wohnort", "Marienberg"}},
+						},
+					},
+				},
 			},
 		},
 	}
@@ -67,10 +76,12 @@ func (qs *QueryService) SaveExample() (model.Query, error) {
 }
 
 func (qs *QueryService) AddQuery(query model.Query) (model.Query, error) {
+	query.Filter = misc.ConvertToBSOND(query.FilterJson)
 	return qs.queryRepository.SaveQuery(query)
 }
 
 func (qs *QueryService) UpdateQuery(query model.Query) (model.Query, error) {
+	query.Filter = misc.ConvertToBSOND(query.FilterJson)
 	return qs.queryRepository.UpdateQuery(query)
 }
 
