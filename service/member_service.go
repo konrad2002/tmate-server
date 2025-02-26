@@ -141,6 +141,7 @@ func (ms *MemberService) GetAllByQuery(queryId primitive.ObjectID) (*[]model.Mem
 		options.Find().SetProjection(query.Projection).SetSort(query.Sort),
 	)
 	if err != nil {
+		fmt.Println("failed to retrieve members")
 		fmt.Println(err)
 		return nil, nil, nil, err
 	}

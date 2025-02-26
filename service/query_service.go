@@ -73,3 +73,7 @@ func (qs *QueryService) AddQuery(query model.Query) (model.Query, error) {
 func (qs *QueryService) UpdateQuery(query model.Query) (model.Query, error) {
 	return qs.queryRepository.UpdateQuery(query)
 }
+
+func (qs *QueryService) RemoveQuery(id primitive.ObjectID) (model.Query, error) {
+	return qs.queryRepository.RemoveQueryById(id)
+}

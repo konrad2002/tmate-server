@@ -109,3 +109,19 @@ func (qr *QueryRepository) UpdateQuery(query model.Query) (model.Query, error) {
 
 	return qr.GetQueryByBsonDocument(bson.D{{"_id", query.Identifier}})
 }
+
+func (qr *QueryRepository) RemoveQueryById(id primitive.ObjectID) (model.Query, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	query, err := qr.GetQueryByBsonDocument(bson.D{{"_id", id}})
+	if err != nil {
+		return model.Query{}, err
+	}
+
+	_, err = qr.collection.DeleteOne(ctx, bson.D{{"_id", id}})
+	if err != nil {
+		return model.Query{}, err
+	}
+	return query, nil
+}

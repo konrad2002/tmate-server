@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/konrad2002/tmate-server/model"
 	"github.com/konrad2002/tmate-server/service"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 )
 
@@ -21,13 +22,17 @@ func NewQueryController(queryService service.QueryService) QueryController {
 func (qc *QueryController) RegisterRoutes(rg *gin.RouterGroup) {
 	router := rg.Group("/query/")
 	router.GET("", qc.getAllQueries)
+	router.GET("id/:id", qc.getQueryById)
 
 	router.POST("save-example", qc.saveExample)
 	router.POST("", qc.addQuery)
 
 	router.PUT("", qc.updateQuery)
 
+	router.DELETE(":id", qc.removeQuery)
+
 	router.OPTIONS("", qc.ok)
+	router.OPTIONS(":id", qc.ok)
 
 }
 
@@ -44,6 +49,23 @@ func (qc *QueryController) getAllQueries(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, queries)
+}
+
+func (qc *QueryController) getQueryById(c *gin.Context) {
+	id, convErr := primitive.ObjectIDFromHex(c.Param("id"))
+	if convErr != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given id was not of type ObjectID"})
+		return
+	}
+
+	query, err := qc.queryService.GetQueryById(id)
+	if err != nil {
+		println(err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, query)
 }
 
 func (qc *QueryController) saveExample(c *gin.Context) {
@@ -91,4 +113,21 @@ func (qc *QueryController) updateQuery(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, r)
+}
+
+func (qc *QueryController) removeQuery(c *gin.Context) {
+	id, convErr := primitive.ObjectIDFromHex(c.Param("id"))
+	if convErr != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given id was not of type ObjectID"})
+		return
+	}
+
+	query, err := qc.queryService.RemoveQuery(id)
+	if err != nil {
+		println(err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, query)
 }
