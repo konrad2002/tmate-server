@@ -129,11 +129,15 @@ func (ms *MemberService) GetFamilies() (*dto.FamilyListDto, error) {
 	return &families, nil
 }
 
-func (ms *MemberService) GetAllByQuery(queryId primitive.ObjectID) (*[]model.Member, *[]model.Field, *model.Query, error) {
+func (ms *MemberService) GetAllByQuery(queryId primitive.ObjectID, sortField string, sortDirection int) (*[]model.Member, *[]model.Field, *model.Query, error) {
 	query, err := ms.queryService.GetQueryById(queryId)
 	if err != nil {
 		fmt.Println(err)
 		return nil, nil, nil, err
+	}
+
+	if sortField != "" {
+		query.Sort = bson.D{{"data." + sortField, sortDirection}}
 	}
 
 	members, err := ms.memberRepository.GetMembersByBsonDocumentWithOptions(

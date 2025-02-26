@@ -8,6 +8,7 @@ import (
 	"github.com/konrad2002/tmate-server/service"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
+	"strconv"
 )
 
 type MemberController struct {
@@ -69,7 +70,10 @@ func (mc *MemberController) runMemberQuery(c *gin.Context) {
 		return
 	}
 
-	members, fields, query, err := mc.memberService.GetAllByQuery(queryId)
+	sortField := c.Query("sort_field")
+	sortDirection, _ := strconv.Atoi(c.Query("sort_direction"))
+
+	members, fields, query, err := mc.memberService.GetAllByQuery(queryId, sortField, sortDirection)
 	if err != nil {
 		println(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
