@@ -30,6 +30,7 @@ func (mc *MemberController) RegisterRoutes(rg *gin.RouterGroup) {
 	router.GET("families", mc.getFamilies)
 
 	router.POST("", mc.addMember)
+	router.POST("import", mc.importMembers)
 
 	router.PUT("", mc.updateMember)
 
@@ -132,6 +133,36 @@ func (mc *MemberController) addMember(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, r)
+}
+
+func (mc *MemberController) importMembers(c *gin.Context) {
+	var members []model.Member
+	if err := c.BindJSON(&members); err != nil {
+		println(err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	var errs []error
+	success := 0
+	for _, member := range members {
+		_, err := mc.memberService.AddMember(member, primitive.ObjectID{0})
+		if err == nil {
+			success++
+		} else {
+			errs = append(errs, err)
+		}
+	}
+
+	if len(errs) > 0 {
+		for _, err := range errs {
+			println(err.Error())
+		}
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "failed"})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{"imported": success})
 }
 
 func (mc *MemberController) updateMember(c *gin.Context) {

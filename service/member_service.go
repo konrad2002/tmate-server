@@ -170,40 +170,12 @@ func (ms *MemberService) AddMember(member model.Member, familyMemberId primitive
 		}
 	}
 
+	err := ms.convertDataTypes(&member)
+	if err != nil {
+		return model.Member{}, err
+	}
+
 	return ms.memberRepository.SaveMember(member)
-}
-
-// getFamilyIdFromMember returns the family members id;
-// boolean, if member has a family id
-// error: no family field; failed to parse family id
-func (ms *MemberService) getFamilyIdFromMember(member model.Member, familyFieldName string) (int, bool, error) {
-	if familyFieldName == "" {
-
-		familyField, err := ms.fieldService.GetFirstFieldWithType(model.Family)
-		if err != nil {
-			return 0, false, err
-		}
-
-		if familyField.Name == "" {
-			err := errors.New(fmt.Sprintf("no family field defined!"))
-			return 0, false, err
-		}
-
-		familyFieldName = familyField.Name
-	}
-
-	familyIdValue := member.Data[familyFieldName]
-	if familyIdValue != nil {
-		familyId, err := misc.AnyToInt(familyIdValue)
-		if err != nil {
-			err := errors.New(fmt.Sprintf("failed to parse family id (%d) for member %s", member.Data[familyFieldName], member.Identifier))
-			return 0, false, err
-		}
-		return familyId, true, nil
-	} else {
-		return 0, false, nil
-	}
-
 }
 
 func (ms *MemberService) UpdateMember(member model.Member, familyMemberId primitive.ObjectID) (model.Member, error) {
@@ -213,6 +185,11 @@ func (ms *MemberService) UpdateMember(member model.Member, familyMemberId primit
 		if err != nil {
 			return model.Member{}, err
 		}
+	}
+
+	err := ms.convertDataTypes(&member)
+	if err != nil {
+		return model.Member{}, err
 	}
 
 	return ms.memberRepository.UpdateMember(member)
@@ -263,4 +240,73 @@ func (ms *MemberService) createOrAddFamily(member model.Member, familyMemberId p
 	member.Data[familyField.Name] = familyId
 
 	return member, nil
+}
+
+// getFamilyIdFromMember returns the family members id;
+// boolean, if member has a family id
+// error: no family field; failed to parse family id
+func (ms *MemberService) getFamilyIdFromMember(member model.Member, familyFieldName string) (int, bool, error) {
+	if familyFieldName == "" {
+
+		familyField, err := ms.fieldService.GetFirstFieldWithType(model.Family)
+		if err != nil {
+			return 0, false, err
+		}
+
+		if familyField.Name == "" {
+			err := errors.New(fmt.Sprintf("no family field defined!"))
+			return 0, false, err
+		}
+
+		familyFieldName = familyField.Name
+	}
+
+	familyIdValue := member.Data[familyFieldName]
+	if familyIdValue != nil {
+		familyId, err := misc.AnyToInt(familyIdValue)
+		if err != nil {
+			err := errors.New(fmt.Sprintf("failed to parse family id (%d) for member %s", member.Data[familyFieldName], member.Identifier))
+			return 0, false, err
+		}
+		return familyId, true, nil
+	} else {
+		return 0, false, nil
+	}
+
+}
+
+func (ms *MemberService) convertDataTypes(member *model.Member) error {
+	fields, err := ms.fieldService.GetAll()
+	if err != nil {
+		return err
+	}
+
+	for _, field := range fields {
+		fmt.Printf("field: %s receive with: %v\n", field.Name, member.Data[field.Name])
+		if member.Data[field.Name] == nil {
+			continue
+		}
+
+		switch field.Type {
+		case model.Number:
+			member.Data[field.Name], err = misc.AnyToInt(member.Data[field.Name])
+			if err != nil {
+				println(err.Error())
+				return errors.New(fmt.Sprintf("failed to convert int field: %s of member: %s was %v\n", field.Name, member.Identifier, member.Data[field.Name]))
+			}
+			break
+		case model.Boolean:
+			member.Data[field.Name] = member.Data[field.Name].(bool)
+			break
+		case model.Date:
+			member.Data[field.Name], err = misc.ParseDate(member.Data[field.Name].(string))
+			if err != nil {
+				println(err.Error())
+				return errors.New(fmt.Sprintf("failed to convert date field: %s of member: %s was %v\n", field.Name, member.Identifier, member.Data[field.Name]))
+			}
+			break
+		}
+	}
+
+	return nil
 }
