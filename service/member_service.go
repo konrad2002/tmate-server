@@ -129,7 +129,7 @@ func (ms *MemberService) GetFamilies() (*dto.FamilyListDto, error) {
 	return &families, nil
 }
 
-func (ms *MemberService) GetAllByQuery(queryId primitive.ObjectID, sortField string, sortDirection int) (*[]model.Member, *[]model.Field, *model.Query, error) {
+func (ms *MemberService) GetAllByQueryId(queryId primitive.ObjectID, sortField string, sortDirection int) (*[]model.Member, *[]model.Field, *model.Query, error) {
 	query, err := ms.queryService.GetQueryById(queryId)
 	if err != nil {
 		fmt.Println(err)
@@ -140,10 +140,15 @@ func (ms *MemberService) GetAllByQuery(queryId primitive.ObjectID, sortField str
 		query.Sort = bson.D{{"data." + sortField, sortDirection}}
 	}
 
+	return ms.GetAllByQuery(query)
+}
+
+func (ms *MemberService) GetAllByQuery(query model.Query) (*[]model.Member, *[]model.Field, *model.Query, error) {
 	members, err := ms.memberRepository.GetMembersByBsonDocumentWithOptions(
 		query.Filter,
 		options.Find().SetSort(query.Sort),
 		//  TODO: table editing requires all fields, but in normal table, projection could be applied
+		// ATTENTION: also change attest system to fetch all necessary information then
 		//options.Find().SetProjection(query.Projection).SetSort(query.Sort),
 	)
 	if err != nil {
@@ -152,7 +157,13 @@ func (ms *MemberService) GetAllByQuery(queryId primitive.ObjectID, sortField str
 		return nil, nil, nil, err
 	}
 
-	fields, err := ms.fieldService.GetAllForQuery(query)
+	var fields []model.Field
+	if query.Projection != nil {
+		fields, err = ms.fieldService.GetAllForQuery(query)
+	} else {
+		fields, err = ms.fieldService.GetAll()
+	}
+
 	if err != nil {
 		fmt.Println(err)
 		return nil, nil, nil, err
@@ -282,7 +293,7 @@ func (ms *MemberService) convertDataTypes(member *model.Member) error {
 	}
 
 	for _, field := range fields {
-		fmt.Printf("field: %s receive with: %v\n", field.Name, member.Data[field.Name])
+		//fmt.Printf("field: %s receive with: %v\n", field.Name, member.Data[field.Name])
 		if member.Data[field.Name] == nil {
 			continue
 		}

@@ -42,6 +42,12 @@ func ConvertToBSOND(data interface{}) bson.D {
 // Helper function to process BSON values (including nested bson.D and bson.A)
 func convertToBSONValue(value interface{}) interface{} {
 	switch v := value.(type) {
+	case string:
+		// Attempt to parse as a date
+		if parsedDate, err := ParseDate(v); err == nil {
+			return parsedDate
+		}
+		return v // Return as string if not a valid date
 	case []interface{}:
 		// If it's an array, process it as bson.A
 		arr := bson.A{}

@@ -4,6 +4,8 @@
   "e_mail": "e_mail",
   "e_mail_2": "e_mail_eltern",
   "family": "familie",
+  "attest_date": "attestdatum",
+  "attest_required": "attest_benoetigt",
   "address": {
     "street": "strasse",
     "number": "nummer",

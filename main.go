@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/konrad2002/tmate-server/attest"
 	"github.com/konrad2002/tmate-server/controller"
 	"github.com/konrad2002/tmate-server/db"
 	"github.com/konrad2002/tmate-server/repository"
@@ -21,11 +22,14 @@ var (
 	fs service.FieldService
 	cs service.ConfigService
 	qs service.QueryService
+	as service.AttestService
+	es service.ExportService
 
 	mc controller.MemberController
 	fc controller.FieldController
 	cc controller.ConfigController
 	qc controller.QueryController
+	ec controller.ExportController
 
 	ctx         context.Context
 	mongoClient *mongo.Client
@@ -52,11 +56,14 @@ func init() {
 	qs = service.NewQueryService(qr)
 	cs = service.NewConfigService()
 	ms = service.NewMemberService(mr, qs, fs, cs)
+	as = service.NewAttestService(ms)
+	es = service.NewExportService(ms)
 
 	mc = controller.NewMemberController(ms)
 	fc = controller.NewFieldController(fs)
 	cc = controller.NewConfigController(cs)
 	qc = controller.NewQueryController(qs)
+	ec = controller.NewExportController(es)
 
 	server = gin.Default()
 }
@@ -75,6 +82,7 @@ func main() {
 	fc.RegisterRoutes(basePath)
 	cc.RegisterRoutes(basePath)
 	qc.RegisterRoutes(basePath)
+	ec.RegisterRoutes(basePath)
 
 	port := os.Getenv("TMATE_PORT")
 
@@ -82,6 +90,8 @@ func main() {
 		fmt.Println("no application port given! Please set TMATE_PORT.")
 		return
 	}
+
+	attest.StartAttestRoutine(as, fs, cs)
 
 	log.Fatal(server.Run(":" + port))
 }

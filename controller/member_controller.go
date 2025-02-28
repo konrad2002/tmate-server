@@ -74,7 +74,7 @@ func (mc *MemberController) runMemberQuery(c *gin.Context) {
 	sortField := c.Query("sort_field")
 	sortDirection, _ := strconv.Atoi(c.Query("sort_direction"))
 
-	members, fields, query, err := mc.memberService.GetAllByQuery(queryId, sortField, sortDirection)
+	members, fields, query, err := mc.memberService.GetAllByQueryId(queryId, sortField, sortDirection)
 	if err != nil {
 		println(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})

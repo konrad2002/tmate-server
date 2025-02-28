@@ -1,1 +1,9 @@
-{"default_query":"67bf21a1c22fb8af23cc48c5"}
+{
+  "default_query":"67bf21a1c22fb8af23cc48c5",
+  "attest": {
+    "enable_email_notification": true,
+    "warn_distance": "1m",
+    "template_warning": "/assets/templates/attest_email_warning.html",
+    "template_missing": "/assets/templates/attest_email_missing.html"
+  }
+}
