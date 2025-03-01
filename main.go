@@ -18,18 +18,20 @@ import (
 var (
 	server *gin.Engine
 
-	ms service.MemberService
-	fs service.FieldService
-	cs service.ConfigService
-	qs service.QueryService
-	as service.AttestService
-	es service.ExportService
+	ms  service.MemberService
+	fs  service.FieldService
+	cs  service.ConfigService
+	qs  service.QueryService
+	as  service.AttestService
+	es  service.ExportService
+	ems service.EmailService
 
-	mc controller.MemberController
-	fc controller.FieldController
-	cc controller.ConfigController
-	qc controller.QueryController
-	ec controller.ExportController
+	mc  controller.MemberController
+	fc  controller.FieldController
+	cc  controller.ConfigController
+	qc  controller.QueryController
+	ec  controller.ExportController
+	emc controller.EmailController
 
 	ctx         context.Context
 	mongoClient *mongo.Client
@@ -58,12 +60,14 @@ func init() {
 	ms = service.NewMemberService(mr, qs, fs, cs)
 	as = service.NewAttestService(ms)
 	es = service.NewExportService(ms)
+	ems = service.NewEmailService(cs, ms)
 
 	mc = controller.NewMemberController(ms)
 	fc = controller.NewFieldController(fs)
 	cc = controller.NewConfigController(cs)
 	qc = controller.NewQueryController(qs)
 	ec = controller.NewExportController(es)
+	emc = controller.NewEmailController(ems)
 
 	server = gin.Default()
 }
@@ -83,6 +87,7 @@ func main() {
 	cc.RegisterRoutes(basePath)
 	qc.RegisterRoutes(basePath)
 	ec.RegisterRoutes(basePath)
+	emc.RegisterRoutes(basePath)
 
 	port := os.Getenv("TMATE_PORT")
 
@@ -91,7 +96,7 @@ func main() {
 		return
 	}
 
-	attest.StartAttestRoutine(as, fs, cs)
+	attest.StartAttestRoutine(as, fs, cs, ems)
 
 	log.Fatal(server.Run(":" + port))
 }

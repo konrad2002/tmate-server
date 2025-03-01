@@ -1,0 +1,10 @@
+{
+  "address": "meine@mail.de",
+  "name": "Geschäftsstelle",
+  "smtp": {
+    "host": "smtp.gmail.com",
+    "port": "587",
+    "username": "meine@mail.de",
+    "password": "123456"
+  }
+}

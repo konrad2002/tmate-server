@@ -23,3 +23,16 @@ type AddressFields struct {
 type Config struct {
 	DefaultQuery primitive.ObjectID `json:"default_query"`
 }
+
+type EmailConfig struct {
+	Address string          `json:"address"`
+	Name    string          `json:"name"`
+	Smtp    EmailSmtpConfig `json:"smtp"`
+}
+
+type EmailSmtpConfig struct {
+	Host     string `json:"host"`
+	Port     string `json:"port"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+}

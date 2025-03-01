@@ -2,11 +2,13 @@ package service
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/konrad2002/tmate-server/model"
 	"os"
 )
 
 var configDir = "config/"
+var emailDir = configDir + "email/"
 var specialFieldsFile = configDir + "special_fields.json"
 var configFile = configDir + "config.json"
 
@@ -70,6 +72,64 @@ func (cs *ConfigService) GetSpecialFields() (*model.SpecialFields, error) {
 	}
 
 	return &specialFields, nil
+}
+
+func (cs *ConfigService) GetMailConfigs() (*[]model.EmailConfig, error) {
+	files, err := os.ReadDir(emailDir)
+	if err != nil {
+		return nil, err
+	}
+
+	var emailConfigs []model.EmailConfig
+
+	for _, file := range files {
+		if !file.IsDir() && file.Name() != "example.config.json" {
+			jsonString, err := os.ReadFile(emailDir + file.Name())
+			if err != nil {
+				return nil, err
+			}
+
+			var emailConfig model.EmailConfig
+
+			err = json.Unmarshal(jsonString, &emailConfig)
+			if err != nil {
+				return nil, err
+			}
+
+			emailConfigs = append(emailConfigs, emailConfig)
+		}
+	}
+
+	return &emailConfigs, nil
+}
+
+func (cs *ConfigService) GetMailConfig(email string) (*model.EmailConfig, error) {
+	files, err := os.ReadDir(emailDir)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, file := range files {
+		if !file.IsDir() {
+			jsonString, err := os.ReadFile(emailDir + file.Name())
+			if err != nil {
+				return nil, err
+			}
+
+			var emailConfig model.EmailConfig
+
+			err = json.Unmarshal(jsonString, &emailConfig)
+			if err != nil {
+				return nil, err
+			}
+
+			if emailConfig.Address == email {
+				return &emailConfig, nil
+			}
+		}
+	}
+
+	return nil, errors.New("no config found for this email address " + email)
 }
 
 func (cs *ConfigService) GetConfig() (*model.Config, error) {

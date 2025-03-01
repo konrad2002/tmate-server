@@ -7,10 +7,10 @@ import (
 	"time"
 )
 
-func StartAttestRoutine(attestService service.AttestService, fieldService service.FieldService, configService service.ConfigService) {
+func StartAttestRoutine(attestService service.AttestService, fieldService service.FieldService, configService service.ConfigService, emailService service.EmailService) {
 	go func() {
 		for {
-			err := runTask(attestService, fieldService, configService)
+			err := runTask(attestService, fieldService, configService, emailService)
 			if err != nil {
 				println("Attest Routine had an error:")
 				println(err.Error())
@@ -27,7 +27,7 @@ func StartAttestRoutine(attestService service.AttestService, fieldService servic
 	}()
 }
 
-func runTask(attestService service.AttestService, fieldService service.FieldService, configService service.ConfigService) error {
+func runTask(attestService service.AttestService, fieldService service.FieldService, configService service.ConfigService, emailService service.EmailService) error {
 	fmt.Println("\033[1;36m  --===[ ATTEST ROUTINE ]===-- \033[0m Task executed at:", time.Now())
 
 	specialFields, err := configService.GetSpecialFields()
@@ -50,7 +50,7 @@ func runTask(attestService service.AttestService, fieldService service.FieldServ
 		fmt.Printf("%s, %s, %s, %s\n", firstName, lastName, email, date)
 
 		// notify about attest in one month (send email)
-		err := SendAttestEmail(firstName, lastName, email, date, "Ärztliches Attest bald ungültig", "assets/templates/attest_email_warning.html")
+		err := emailService.SendAttestEmail(firstName, lastName, email, date, "Ärztliches Attest bald ungültig", "assets/templates/attest_email_warning.html")
 		if err != nil {
 			fmt.Printf("\033[37mfailed to send mail: %s\033[0m\n", err)
 		}
@@ -71,7 +71,7 @@ func runTask(attestService service.AttestService, fieldService service.FieldServ
 		fmt.Printf("%s, %s, %s, %s\n", firstName, lastName, email, date)
 
 		// notify about attest missing (send email)
-		err := SendAttestEmail(firstName, lastName, email, date, "Ärztliches Attest ungültig!", "assets/templates/attest_email_missing.html")
+		err := emailService.SendAttestEmail(firstName, lastName, email, date, "Ärztliches Attest ungültig!", "assets/templates/attest_email_missing.html")
 		if err != nil {
 			fmt.Printf("\033[37mfailed to send mail: %s\033[0m\n", err)
 		}
