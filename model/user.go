@@ -1,10 +1,14 @@
 package model
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
+)
 
 type User struct {
 	Identifier   primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	Username     string             `json:"username,omitempty" bson:"username,omitempty"`
+	Username     string             `json:"username" bson:"username"`
+	Email        string             `json:"email" bson:"email"`
 	FirstName    string             `json:"first_name,omitempty" bson:"first_name,omitempty"`
 	LastName     string             `json:"last_name,omitempty" bson:"last_name,omitempty"`
 	MemberId     primitive.ObjectID `json:"member_id" bson:"member_id,omitempty"`
@@ -15,4 +19,9 @@ type User struct {
 	Logins       int                `json:"logins,omitempty" bson:"logins,omitempty"`
 	Token        string             `json:"token,omitempty" bson:"token,omitempty"`
 	Password     string             `json:"password,omitempty" bson:"password,omitempty"`
+	CreatedAt    time.Time          `json:"created_at" bson:"created_at"`
+	ModifiedAt   time.Time          `json:"modified_at,omitempty" bson:"modified_at,omitempty"`
+}
+
+type Role struct {
 }

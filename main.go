@@ -24,6 +24,7 @@ var (
 	qs  service.QueryService
 	as  service.AttestService
 	es  service.ExportService
+	us  service.UserService
 	ems service.EmailService
 
 	mc  controller.MemberController
@@ -31,6 +32,7 @@ var (
 	cc  controller.ConfigController
 	qc  controller.QueryController
 	ec  controller.ExportController
+	uc  controller.UserController
 	emc controller.EmailController
 
 	ctx         context.Context
@@ -53,6 +55,7 @@ func init() {
 	mr := repository.NewMemberRepository(mongoCon)
 	fr := repository.NewFieldRepository(mongoCon)
 	qr := repository.NewQueryRepository(mongoCon)
+	ur := repository.NewUserRepository(mongoCon)
 
 	fs = service.NewFieldService(fr)
 	qs = service.NewQueryService(qr)
@@ -60,6 +63,7 @@ func init() {
 	ms = service.NewMemberService(mr, qs, fs, cs)
 	as = service.NewAttestService(ms)
 	es = service.NewExportService(ms)
+	us = service.NewUserService(ur)
 	ems = service.NewEmailService(cs, ms)
 
 	mc = controller.NewMemberController(ms)
@@ -67,6 +71,7 @@ func init() {
 	cc = controller.NewConfigController(cs)
 	qc = controller.NewQueryController(qs)
 	ec = controller.NewExportController(es)
+	uc = controller.NewUserController(us)
 	emc = controller.NewEmailController(ems)
 
 	server = gin.Default()
@@ -87,6 +92,7 @@ func main() {
 	cc.RegisterRoutes(basePath)
 	qc.RegisterRoutes(basePath)
 	ec.RegisterRoutes(basePath)
+	uc.RegisterRoutes(basePath)
 	emc.RegisterRoutes(basePath)
 
 	port := os.Getenv("TMATE_PORT")
