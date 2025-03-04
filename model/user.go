@@ -19,9 +19,25 @@ type User struct {
 	Logins       int                `json:"logins,omitempty" bson:"logins,omitempty"`
 	Token        string             `json:"token,omitempty" bson:"token,omitempty"`
 	Password     string             `json:"password,omitempty" bson:"password,omitempty"`
+	Permissions  Permission         `json:"permissions,omitempty" bson:"permissions,omitempty"`
 	CreatedAt    time.Time          `json:"created_at" bson:"created_at"`
 	ModifiedAt   time.Time          `json:"modified_at,omitempty" bson:"modified_at,omitempty"`
 }
 
 type Role struct {
+	Name        string     `json:"name" bson:"name"`
+	Permissions Permission `json:"permissions" bson:"permissions,omitempty"`
+}
+
+type Permission struct {
+	// int fields: 0; 1=read; 2=write; 3=delete
+	UserManagement           bool                      `json:"user_management" bson:"user_management"`
+	TableStructureManagement bool                      `json:"table_structure_management" bson:"user_management"`
+	EmailAddressManagement   bool                      `json:"email_address_management" bson:"user_management"`
+	EmailAddressUsage        map[string]bool           `json:"email_address_usage" bson:"user_management"`
+	ByPassEmailRegex         bool                      `json:"by_pass_email_regex" bson:"user_management"`
+	QueryManagement          bool                      `json:"query_management" bson:"user_management"`
+	MemberAdmin              int                       `json:"member_admin" bson:"user_management"`
+	Member                   map[string]map[string]int `json:"member" bson:"user_management"`
+	// 						 group x column
 }
