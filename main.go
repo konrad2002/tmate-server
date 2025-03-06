@@ -41,6 +41,7 @@ var (
 )
 
 func init() {
+	println("initializing...")
 	var cancel context.CancelFunc
 	ctx, cancel = context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -79,6 +80,7 @@ func init() {
 }
 
 func main() {
+	println("starting...")
 	defer func(mongoClient *mongo.Client, ctx context.Context) {
 		err := mongoClient.Disconnect(ctx)
 		if err != nil {
@@ -124,8 +126,4 @@ func main() {
 	attest.StartAttestRoutine(as, fs, cs, ems)
 
 	log.Fatal(server.Run(":" + port))
-}
-
-func GetUserService() service.UserService {
-	return us
 }
