@@ -89,9 +89,7 @@ func main() {
 	}(mongoClient, ctx)
 
 	server.Use(func(c *gin.Context) {
-		println("got request")
 		if c.Request.Method == "OPTIONS" {
-			println("got OPTIONS")
 			c.Status(204)
 			return
 		}

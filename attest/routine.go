@@ -17,7 +17,7 @@ func StartAttestRoutine(attestService service.AttestService, fieldService servic
 			}
 
 			now := time.Now()
-			nextRun := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute()+10, 0, 0, now.Location())
+			nextRun := time.Date(now.Year(), now.Month(), now.Day(), 14, 0, 0, 0, now.Location())
 			duration := time.Until(nextRun)
 			fmt.Println("Next run in:", duration)
 

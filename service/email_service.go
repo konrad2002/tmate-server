@@ -50,8 +50,8 @@ func (ems *EmailService) sendEmail(sender string, receiver string, subject strin
 		return err
 	}
 
-	//allowedMails := []string{"konrad@schwimmteamerzgebirge.de", "konrad2002@arcor.de", "dr.weiss@arcor.de", "johann2005@arcor.de", "ubuntovka@gmail.com"}
-	allowedMails := []string{"konrad@schwimmteamerzgebirge.de"}
+	allowedMails := []string{"konrad@schwimmteamerzgebirge.de", "konrad2002@arcor.de", "dr.weiss@arcor.de", "johann2005@arcor.de", "ubuntovka@gmail.com"}
+	//allowedMails := []string{"konrad@schwimmteamerzgebirge.de"}
 
 	if !misc.Contains(allowedMails, receiver) {
 		return errors.New("illegal receiver in testing")
