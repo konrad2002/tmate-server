@@ -32,12 +32,12 @@ type Role struct {
 type Permission struct {
 	// int fields: 0; 1=read; 2=write; 3=delete
 	UserManagement           bool                      `json:"user_management" bson:"user_management"`
-	TableStructureManagement bool                      `json:"table_structure_management" bson:"user_management"`
-	EmailAddressManagement   bool                      `json:"email_address_management" bson:"user_management"`
-	EmailAddressUsage        map[string]bool           `json:"email_address_usage" bson:"user_management"`
-	ByPassEmailRegex         bool                      `json:"by_pass_email_regex" bson:"user_management"`
-	QueryManagement          bool                      `json:"query_management" bson:"user_management"`
-	MemberAdmin              int                       `json:"member_admin" bson:"user_management"`
-	Member                   map[string]map[string]int `json:"member" bson:"user_management"`
+	TableStructureManagement bool                      `json:"table_structure_management" bson:"table_structure_management"`
+	EmailAddressManagement   bool                      `json:"email_address_management" bson:"email_address_management"`
+	EmailAddressUsage        map[string]bool           `json:"email_address_usage" bson:"email_address_usage"`
+	ByPassEmailRegex         bool                      `json:"by_pass_email_regex" bson:"by_pass_email_regex"`
+	QueryManagement          bool                      `json:"query_management" bson:"query_management"`
+	MemberAdmin              int                       `json:"member_admin" bson:"member_admin"`
+	Member                   map[string]map[string]int `json:"member" bson:"member"`
 	// 						 group x column
 }
