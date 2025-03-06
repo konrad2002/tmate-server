@@ -100,7 +100,7 @@ func (us *UserService) Login(login dto.LoginDto) (string, error) {
 		"exp": time.Now().Add(time.Hour * 24).Unix(),
 	})
 
-	token, err := generateToken.SignedString([]byte(os.Getenv("SECRET")))
+	token, err := generateToken.SignedString([]byte(os.Getenv("TMATE_AUTH_SECRET")))
 
 	if err != nil {
 		fmt.Println("failed to generate token:", err)
