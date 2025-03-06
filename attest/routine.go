@@ -10,12 +10,6 @@ import (
 func StartAttestRoutine(attestService service.AttestService, fieldService service.FieldService, configService service.ConfigService, emailService service.EmailService) {
 	go func() {
 		for {
-			err := runTask(attestService, fieldService, configService, emailService)
-			if err != nil {
-				println("Attest Routine had an error:")
-				println(err.Error())
-			}
-
 			now := time.Now()
 			nextRun := time.Date(now.Year(), now.Month(), now.Day(), 14, 0, 0, 0, now.Location())
 			duration := time.Until(nextRun)
@@ -23,6 +17,11 @@ func StartAttestRoutine(attestService service.AttestService, fieldService servic
 
 			time.Sleep(duration)
 
+			err := runTask(attestService, fieldService, configService, emailService)
+			if err != nil {
+				println("Attest Routine had an error:")
+				println(err.Error())
+			}
 		}
 	}()
 }
