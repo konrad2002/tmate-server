@@ -10,11 +10,13 @@ import (
 
 type EmailController struct {
 	emailService service.EmailService
+	userService  service.UserService
 }
 
-func NewEmailController(emailService service.EmailService) EmailController {
+func NewEmailController(emailService service.EmailService, userService service.UserService) EmailController {
 	return EmailController{
 		emailService: emailService,
+		userService:  userService,
 	}
 }
 

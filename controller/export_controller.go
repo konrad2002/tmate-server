@@ -12,11 +12,13 @@ import (
 
 type ExportController struct {
 	exportService service.ExportService
+	userService   service.UserService
 }
 
-func NewExportController(exportService service.ExportService) ExportController {
+func NewExportController(exportService service.ExportService, userService service.UserService) ExportController {
 	return ExportController{
 		exportService: exportService,
+		userService:   userService,
 	}
 }
 

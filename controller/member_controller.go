@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/konrad2002/tmate-server/auth"
 	"github.com/konrad2002/tmate-server/dto"
 	"github.com/konrad2002/tmate-server/model"
 	"github.com/konrad2002/tmate-server/service"
@@ -13,16 +14,20 @@ import (
 
 type MemberController struct {
 	memberService service.MemberService
+	userService   service.UserService
 }
 
-func NewMemberController(memberService service.MemberService) MemberController {
+func NewMemberController(memberService service.MemberService, userService service.UserService) MemberController {
 	return MemberController{
 		memberService: memberService,
+		userService:   userService,
 	}
 }
 
 func (mc *MemberController) RegisterRoutes(rg *gin.RouterGroup) {
 	router := rg.Group("/member/")
+
+	router.Use(auth.HandlerFunc(&mc.userService))
 
 	router.GET("", mc.getAllMembers)
 	router.GET("id/:id", mc.getMemberById)

@@ -10,11 +10,13 @@ import (
 
 type FieldController struct {
 	fieldService service.FieldService
+	userService  service.UserService
 }
 
-func NewFieldController(fieldService service.FieldService) FieldController {
+func NewFieldController(fieldService service.FieldService, userService service.UserService) FieldController {
 	return FieldController{
 		fieldService: fieldService,
+		userService:  userService,
 	}
 }
 

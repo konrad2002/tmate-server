@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/konrad2002/tmate-server/attest"
 	"github.com/konrad2002/tmate-server/controller"
@@ -66,13 +67,13 @@ func init() {
 	us = service.NewUserService(ur)
 	ems = service.NewEmailService(cs, ms)
 
-	mc = controller.NewMemberController(ms)
-	fc = controller.NewFieldController(fs)
-	cc = controller.NewConfigController(cs)
-	qc = controller.NewQueryController(qs)
-	ec = controller.NewExportController(es)
+	mc = controller.NewMemberController(ms, us)
+	fc = controller.NewFieldController(fs, us)
+	cc = controller.NewConfigController(cs, us)
+	qc = controller.NewQueryController(qs, us)
+	ec = controller.NewExportController(es, us)
 	uc = controller.NewUserController(us)
-	emc = controller.NewEmailController(ems)
+	emc = controller.NewEmailController(ems, us)
 
 	server = gin.Default()
 }
@@ -84,6 +85,24 @@ func main() {
 			panic(err)
 		}
 	}(mongoClient, ctx)
+
+	server.Use(func(c *gin.Context) {
+		println("got request")
+		if c.Request.Method == "OPTIONS" {
+			println("got OPTIONS")
+			c.Status(204)
+			return
+		}
+		c.Next()
+	})
+
+	server.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Authorization", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
 
 	basePath := server.Group("/api/v1")
 
@@ -105,4 +124,8 @@ func main() {
 	attest.StartAttestRoutine(as, fs, cs, ems)
 
 	log.Fatal(server.Run(":" + port))
+}
+
+func GetUserService() service.UserService {
+	return us
 }

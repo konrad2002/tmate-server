@@ -11,11 +11,13 @@ import (
 
 type QueryController struct {
 	queryService service.QueryService
+	userService  service.UserService
 }
 
-func NewQueryController(queryService service.QueryService) QueryController {
+func NewQueryController(queryService service.QueryService, userService service.UserService) QueryController {
 	return QueryController{
 		queryService: queryService,
+		userService:  userService,
 	}
 }
 

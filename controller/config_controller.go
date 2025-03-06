@@ -9,11 +9,13 @@ import (
 
 type ConfigController struct {
 	configService service.ConfigService
+	userService   service.UserService
 }
 
-func NewConfigController(configService service.ConfigService) ConfigController {
+func NewConfigController(configService service.ConfigService, userService service.UserService) ConfigController {
 	return ConfigController{
 		configService: configService,
+		userService:   userService,
 	}
 }
 
