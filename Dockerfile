@@ -2,7 +2,7 @@
 
 FROM golang:1.24-alpine
 
-WORKDIR /app
+WORKDIR /app/service
 
 COPY tmate-server /app/service
 RUN chmod +x /app/service
