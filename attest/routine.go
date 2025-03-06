@@ -7,11 +7,20 @@ import (
 	"time"
 )
 
+var notificationHour = 18
+
 func StartAttestRoutine(attestService service.AttestService, fieldService service.FieldService, configService service.ConfigService, emailService service.EmailService) {
 	go func() {
 		for {
 			now := time.Now()
-			nextRun := time.Date(now.Year(), now.Month(), now.Day(), 14, 0, 0, 0, now.Location())
+
+			var nextRun time.Time
+			if now.Hour() >= notificationHour {
+				nextRun = time.Date(now.Year(), now.Month(), now.Day()+1, notificationHour, 0, 0, 0, now.Location())
+			} else {
+				nextRun = time.Date(now.Year(), now.Month(), now.Day(), notificationHour, 0, 0, 0, now.Location())
+			}
+
 			duration := time.Until(nextRun)
 			fmt.Println("Next run in:", duration)
 
