@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/konrad2002/tmate-server/dto"
@@ -25,6 +26,8 @@ func (uc *UserController) RegisterRoutes(rg *gin.RouterGroup) {
 	router.GET("", uc.getAllUsers)
 	router.GET("id/:id", uc.getUserById)
 	router.GET("username/:username", uc.getUserByUsername)
+
+	router.GET("me", uc.getUserForMe)
 
 	router.POST("", uc.createUser)
 	router.POST("login", uc.login)
@@ -77,6 +80,18 @@ func (uc *UserController) getUserByUsername(c *gin.Context) {
 
 	user, err := uc.userService.GetUserByUsername(username)
 	if err != nil {
+		println(err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, user)
+}
+
+func (uc *UserController) getUserForMe(c *gin.Context) {
+	user, exists := c.Get("currentUser")
+	if exists == false {
+		err := errors.New("user subject not found")
 		println(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return

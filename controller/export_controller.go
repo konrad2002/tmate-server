@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/konrad2002/tmate-server/auth"
 	"github.com/konrad2002/tmate-server/service"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
@@ -24,6 +25,8 @@ func NewExportController(exportService service.ExportService, userService servic
 
 func (ec *ExportController) RegisterRoutes(rg *gin.RouterGroup) {
 	router := rg.Group("/export/")
+
+	router.Use(auth.HandlerFunc(&ec.userService))
 
 	router.GET("excel/:queryId", ec.exportExcel)
 }

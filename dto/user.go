@@ -30,6 +30,7 @@ type UserInfoDto struct {
 	Active       bool               `json:"active"`
 	TempPassword bool               `json:"temp_password"`
 	Logins       int                `json:"logins"`
+	Permissions  model.Permission   `json:"permissions"`
 	CreatedAt    time.Time          `json:"created_at"`
 	ModifiedAt   time.Time          `json:"modified_at,omitempty"`
 }
@@ -45,6 +46,7 @@ func UserToUserInfoDto(user model.User) UserInfoDto {
 		Active:       user.Active,
 		TempPassword: user.TempPassword,
 		Logins:       user.Logins,
+		Permissions:  user.Permissions,
 		CreatedAt:    user.CreatedAt,
 		ModifiedAt:   user.ModifiedAt,
 	}

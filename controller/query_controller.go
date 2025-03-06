@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/konrad2002/tmate-server/auth"
 	"github.com/konrad2002/tmate-server/model"
 	"github.com/konrad2002/tmate-server/service"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -23,6 +24,9 @@ func NewQueryController(queryService service.QueryService, userService service.U
 
 func (qc *QueryController) RegisterRoutes(rg *gin.RouterGroup) {
 	router := rg.Group("/query/")
+
+	router.Use(auth.HandlerFunc(&qc.userService))
+
 	router.GET("", qc.getAllQueries)
 	router.GET("id/:id", qc.getQueryById)
 

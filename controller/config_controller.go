@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/konrad2002/tmate-server/auth"
 	"github.com/konrad2002/tmate-server/service"
 	"net/http"
 )
@@ -21,6 +22,8 @@ func NewConfigController(configService service.ConfigService, userService servic
 
 func (cc *ConfigController) RegisterRoutes(rg *gin.RouterGroup) {
 	router := rg.Group("/config/")
+
+	router.Use(auth.HandlerFunc(&cc.userService))
 
 	router.GET("", cc.getConfig)
 	router.GET("special_fields", cc.getSpecialFields)

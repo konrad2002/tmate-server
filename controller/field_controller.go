@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/konrad2002/tmate-server/auth"
 	"github.com/konrad2002/tmate-server/model"
 	"github.com/konrad2002/tmate-server/service"
 	"net/http"
@@ -22,6 +23,9 @@ func NewFieldController(fieldService service.FieldService, userService service.U
 
 func (fc *FieldController) RegisterRoutes(rg *gin.RouterGroup) {
 	router := rg.Group("/field/")
+
+	router.Use(auth.HandlerFunc(&fc.userService))
+
 	router.GET("", fc.getAllFields)
 	router.GET("types", fc.getFieldTypes)
 }

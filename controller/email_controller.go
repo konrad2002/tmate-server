@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/konrad2002/tmate-server/auth"
 	"github.com/konrad2002/tmate-server/dto"
 	"github.com/konrad2002/tmate-server/service"
 	"net/http"
@@ -22,6 +23,8 @@ func NewEmailController(emailService service.EmailService, userService service.U
 
 func (emc *EmailController) RegisterRoutes(rg *gin.RouterGroup) {
 	router := rg.Group("/email/")
+
+	router.Use(auth.HandlerFunc(&emc.userService))
 
 	router.GET("senders", emc.getEmailSenders)
 

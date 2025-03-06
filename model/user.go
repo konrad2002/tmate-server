@@ -35,7 +35,7 @@ type Permission struct {
 	TableStructureManagement bool                      `json:"table_structure_management" bson:"table_structure_management"`
 	EmailAddressManagement   bool                      `json:"email_address_management" bson:"email_address_management"`
 	EmailAddressUsage        map[string]bool           `json:"email_address_usage" bson:"email_address_usage"`
-	ByPassEmailRegex         bool                      `json:"by_pass_email_regex" bson:"by_pass_email_regex"`
+	BypassEmailRegex         bool                      `json:"bypass_email_regex" bson:"bypass_email_regex"`
 	QueryManagement          bool                      `json:"query_management" bson:"query_management"`
 	MemberAdmin              int                       `json:"member_admin" bson:"member_admin"`
 	Member                   map[string]map[string]int `json:"member" bson:"member"`
