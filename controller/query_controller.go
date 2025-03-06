@@ -45,7 +45,7 @@ func (qc *QueryController) ok(c *gin.Context) {
 func (qc *QueryController) getAllQueries(c *gin.Context) {
 	queries, err := qc.queryService.GetAll()
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
@@ -73,7 +73,7 @@ func (qc *QueryController) getQueryById(c *gin.Context) {
 func (qc *QueryController) saveExample(c *gin.Context) {
 	queries, err := qc.queryService.SaveExample()
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}

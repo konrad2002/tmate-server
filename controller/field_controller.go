@@ -29,7 +29,7 @@ func (fc *FieldController) RegisterRoutes(rg *gin.RouterGroup) {
 func (fc *FieldController) getAllFields(c *gin.Context) {
 	fields, err := fc.fieldService.GetAll()
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}

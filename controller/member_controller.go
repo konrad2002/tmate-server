@@ -50,7 +50,7 @@ func (mc *MemberController) ok(c *gin.Context) {
 func (mc *MemberController) getAllMembers(c *gin.Context) {
 	members, err := mc.memberService.GetAll()
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}

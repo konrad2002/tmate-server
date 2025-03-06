@@ -40,7 +40,7 @@ func (ec *ExportController) exportExcel(c *gin.Context) {
 
 	buf, err := ec.exportService.ExportFromQueryId(queryId, sortField, sortDirection)
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}

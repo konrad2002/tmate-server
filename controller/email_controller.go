@@ -37,7 +37,7 @@ func (emc *EmailController) ok(c *gin.Context) {
 func (emc *EmailController) getEmailSenders(c *gin.Context) {
 	fields, err := emc.emailService.GetEmailSenders()
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
@@ -55,7 +55,7 @@ func (emc *EmailController) sendMail(c *gin.Context) {
 
 	err := emc.emailService.SendEmailFromTemplate(email.Sender, email.Receivers, email.Subject, email.BodyTemplate)
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}

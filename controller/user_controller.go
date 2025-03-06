@@ -43,7 +43,7 @@ func (uc *UserController) ok(c *gin.Context) {
 func (uc *UserController) getAllUsers(c *gin.Context) {
 	users, err := uc.userService.GetAll()
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}

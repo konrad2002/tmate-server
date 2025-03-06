@@ -31,7 +31,7 @@ func (cc *ConfigController) RegisterRoutes(rg *gin.RouterGroup) {
 func (cc *ConfigController) getSpecialFields(c *gin.Context) {
 	fields, err := cc.configService.GetSpecialFields()
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
@@ -42,7 +42,7 @@ func (cc *ConfigController) getSpecialFields(c *gin.Context) {
 func (cc *ConfigController) getConfig(c *gin.Context) {
 	config, err := cc.configService.GetConfig()
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
@@ -54,7 +54,7 @@ func (cc *ConfigController) initConfig(c *gin.Context) {
 	err := cc.configService.InitConfig()
 
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
