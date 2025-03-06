@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/konrad2002/tmate-server/auth"
 	"github.com/konrad2002/tmate-server/dto"
 	"github.com/konrad2002/tmate-server/service"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -23,6 +24,10 @@ func NewUserController(userService service.UserService) UserController {
 func (uc *UserController) RegisterRoutes(rg *gin.RouterGroup) {
 	router := rg.Group("/user/")
 
+	rg.POST("/user/login", uc.login)
+
+	router.Use(auth.HandlerFunc(&uc.userService))
+
 	router.GET("", uc.getAllUsers)
 	router.GET("id/:id", uc.getUserById)
 	router.GET("username/:username", uc.getUserByUsername)
@@ -30,7 +35,6 @@ func (uc *UserController) RegisterRoutes(rg *gin.RouterGroup) {
 	router.GET("me", uc.getUserForMe)
 
 	router.POST("", uc.createUser)
-	router.POST("login", uc.login)
 
 	router.DELETE("id/:id", uc.removeUser)
 

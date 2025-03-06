@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"encoding/base64"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
@@ -24,9 +25,27 @@ func HandlerFunc(userService *service.UserService) gin.HandlerFunc {
 		}
 
 		authToken := strings.Split(authHeader, " ")
-		if len(authToken) != 2 || authToken[0] != "Bearer" {
+		if len(authToken) != 2 || (authToken[0] != "Bearer" && authToken[0] != "Basic") {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token format"})
 			c.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
+
+		if authToken[0] == "Basic" {
+			payload, err := base64.StdEncoding.DecodeString(authHeader[len("Basic "):])
+			if err != nil {
+				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid Base64 encoding"})
+				return
+			}
+
+			// Split username and password
+			credParts := strings.SplitN(string(payload), ":", 2)
+			if len(credParts) != 2 || credParts[0] != os.Getenv("TMATE_AUTH_USERNAME") || credParts[1] != os.Getenv("TMATE_AUTH_PASSWORD") {
+				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+				return
+			}
+
+			c.Next()
 			return
 		}
 
