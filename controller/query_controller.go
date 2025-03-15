@@ -1,9 +1,11 @@
 package controller
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/konrad2002/tmate-server/auth"
+	"github.com/konrad2002/tmate-server/dto"
 	"github.com/konrad2002/tmate-server/model"
 	"github.com/konrad2002/tmate-server/service"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -91,6 +93,21 @@ func (qc *QueryController) addQuery(c *gin.Context) {
 		println(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
+	}
+
+	// set owner id to submitting person if non given or user has no permission to submit own
+	u, _ := c.Get("currentUser")
+	user := u.(dto.UserInfoDto)
+
+	if query.OwnerUserId.IsZero() {
+		query.OwnerUserId = user.Identifier
+	} else {
+		if !user.Permissions.QueryManagement {
+			err := errors.New("user does not have permission to create queries for other users")
+			println(err.Error())
+			c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+			return
+		}
 	}
 
 	r, err := qc.queryService.AddQuery(query)
