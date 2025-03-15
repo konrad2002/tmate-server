@@ -23,6 +23,10 @@ func (qs *QueryService) GetAll() ([]model.Query, error) {
 	return qs.queryRepository.GetQueriesByBsonDocument(bson.D{})
 }
 
+func (qs *QueryService) GetAllForUser(userId primitive.ObjectID) ([]model.Query, error) {
+	return qs.queryRepository.GetQueriesByBsonDocument(bson.D{{"owner_user_id", userId}})
+}
+
 func (qs *QueryService) GetQueryById(id primitive.ObjectID) (model.Query, error) {
 	return qs.queryRepository.GetQueryByBsonDocument(bson.D{{"_id", id}})
 }

@@ -30,6 +30,7 @@ func (qc *QueryController) RegisterRoutes(rg *gin.RouterGroup) {
 	router.Use(auth.HandlerFunc(&qc.userService))
 
 	router.GET("", qc.getAllQueries)
+	router.GET("me", qc.getAllQueriesForMe)
 	router.GET("id/:id", qc.getQueryById)
 
 	router.POST("save-example", qc.saveExample)
@@ -50,6 +51,19 @@ func (qc *QueryController) ok(c *gin.Context) {
 
 func (qc *QueryController) getAllQueries(c *gin.Context) {
 	queries, err := qc.queryService.GetAll()
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, queries)
+}
+
+func (qc *QueryController) getAllQueriesForMe(c *gin.Context) {
+	u, _ := c.Get("currentUser")
+	user := u.(dto.UserInfoDto)
+	queries, err := qc.queryService.GetAllForUser(user.Identifier)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
@@ -126,6 +140,21 @@ func (qc *QueryController) updateQuery(c *gin.Context) {
 		println(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
+	}
+
+	// set owner id to submitting person if non given or user has no permission to submit own
+	u, _ := c.Get("currentUser")
+	user := u.(dto.UserInfoDto)
+
+	if query.OwnerUserId.IsZero() {
+		query.OwnerUserId = user.Identifier
+	} else {
+		if !user.Permissions.QueryManagement {
+			err := errors.New("user does not have permission to create queries for other users")
+			println(err.Error())
+			c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+			return
+		}
 	}
 
 	r, err := qc.queryService.UpdateQuery(query)
