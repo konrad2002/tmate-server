@@ -83,6 +83,40 @@ func (us *UserService) CreateUser(user dto.CreateUserDto) (*dto.UserInfoDto, err
 	return &userInfo, nil
 }
 
+func (us *UserService) UpdatePassword(username string, newPassword string, isTemp bool) (*dto.UserInfoDto, error) {
+	existingUser, err := us.userRepository.GetUserByBsonDocument(bson.D{{"username", username}})
+	if err != nil {
+		if err.Error() != repository.NoUserFoundError {
+			fmt.Println("failed to lookup username:", err)
+			return nil, err
+		}
+	}
+
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		fmt.Println("failed to hash password:", err)
+		return nil, err
+	}
+
+	existingUser.Password = string(passwordHash)
+	existingUser.ModifiedAt = time.Now()
+	if isTemp {
+		existingUser.TempPassword = true
+	} else {
+		existingUser.TempPassword = false
+	}
+
+	updatedUser, err := us.userRepository.UpdateUser(existingUser)
+	if err != nil {
+		fmt.Println("failed to save user:", err)
+		return nil, err
+	}
+
+	userInfo := dto.UserToUserInfoDto(updatedUser)
+
+	return &userInfo, nil
+}
+
 func (us *UserService) Login(login dto.LoginDto) (string, error) {
 	user, err := us.userRepository.GetUserByBsonDocument(bson.D{{"username", login.Username}})
 	if err != nil {
@@ -105,6 +139,15 @@ func (us *UserService) Login(login dto.LoginDto) (string, error) {
 	if err != nil {
 		fmt.Println("failed to generate token:", err)
 		return "", errors.New("failed to generate token")
+	}
+
+	user.Logins++
+	user.LastLoginAt = time.Now()
+
+	_, err = us.userRepository.UpdateUser(user)
+	if err != nil {
+		fmt.Println("failed to update user:", err)
+		return "", errors.New("failed to finish login")
 	}
 
 	return token, nil

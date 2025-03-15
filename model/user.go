@@ -13,15 +13,16 @@ type User struct {
 	LastName     string             `json:"last_name,omitempty" bson:"last_name,omitempty"`
 	MemberId     primitive.ObjectID `json:"member_id" bson:"member_id,omitempty"`
 	Member       Member             `json:"member,omitempty" bson:"-"`
-	Role         string             `json:"role,omitempty" bson:"role,omitempty"`
-	Active       bool               `json:"active,omitempty" bson:"active,omitempty"`
-	TempPassword bool               `json:"temp_password,omitempty" bson:"temp_password,omitempty"`
-	Logins       int                `json:"logins,omitempty" bson:"logins,omitempty"`
+	Role         string             `json:"role,omitempty" bson:"role"`
+	Active       bool               `json:"active,omitempty" bson:"active"`
+	TempPassword bool               `json:"temp_password,omitempty" bson:"temp_password"`
+	Logins       int                `json:"logins,omitempty" bson:"logins"`
 	Token        string             `json:"token,omitempty" bson:"token,omitempty"`
 	Password     string             `json:"password,omitempty" bson:"password,omitempty"`
 	Permissions  Permission         `json:"permissions,omitempty" bson:"permissions,omitempty"`
 	CreatedAt    time.Time          `json:"created_at" bson:"created_at"`
 	ModifiedAt   time.Time          `json:"modified_at,omitempty" bson:"modified_at,omitempty"`
+	LastLoginAt  time.Time          `json:"last_login_at,omitempty" bson:"last_login_at,omitempty"`
 }
 
 type Role struct {

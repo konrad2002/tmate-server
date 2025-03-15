@@ -8,6 +8,7 @@ import (
 	"github.com/konrad2002/tmate-server/dto"
 	"github.com/konrad2002/tmate-server/service"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -34,6 +35,9 @@ func (uc *UserController) RegisterRoutes(rg *gin.RouterGroup) {
 
 	router.GET("me", uc.getUserForMe)
 
+	router.POST("me/password", uc.changePasswordForMe)
+
+	router.POST("password/:username", uc.changePasswordForUser)
 	router.POST("", uc.createUser)
 
 	router.DELETE("id/:id", uc.removeUser)
@@ -102,6 +106,68 @@ func (uc *UserController) getUserForMe(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, user)
+}
+
+func (uc *UserController) changePasswordForMe(c *gin.Context) {
+	u, exists := c.Get("currentUser")
+	if exists == false {
+		err := errors.New("user subject not found")
+		println(err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	user := u.(dto.UserInfoDto)
+
+	bodyAsByteArray, _ := ioutil.ReadAll(c.Request.Body)
+	newPassword := string(bodyAsByteArray)
+
+	if newPassword == "" {
+		err := errors.New("empty password")
+		println(err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	fmt.Printf("set %s's password to: %s\n", user.Username, newPassword)
+
+	r, err := uc.userService.UpdatePassword(user.Username, newPassword, false)
+	if err != nil {
+		println(err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, r)
+}
+
+func (uc *UserController) changePasswordForUser(c *gin.Context) {
+	username := c.Param("username")
+	if username == "" {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "no username given"})
+		return
+	}
+
+	bodyAsByteArray, _ := ioutil.ReadAll(c.Request.Body)
+	newPassword := string(bodyAsByteArray)
+
+	if newPassword == "" {
+		err := errors.New("empty password")
+		println(err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	fmt.Printf("set %s's password to: %s\n", username, newPassword)
+
+	r, err := uc.userService.UpdatePassword(username, newPassword, true)
+	if err != nil {
+		println(err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, r)
 }
 
 func (uc *UserController) createUser(c *gin.Context) {
