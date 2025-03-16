@@ -24,7 +24,15 @@ func (qs *QueryService) GetAll() ([]model.Query, error) {
 }
 
 func (qs *QueryService) GetAllForUser(userId primitive.ObjectID) ([]model.Query, error) {
-	return qs.queryRepository.GetQueriesByBsonDocument(bson.D{{"owner_user_id", userId}})
+	return qs.queryRepository.GetQueriesByBsonDocument(
+		bson.D{
+			{"$or",
+				bson.A{
+					bson.D{{"owner_user_id", userId}},
+					bson.D{{"owner_user_id", primitive.NilObjectID}},
+				},
+			},
+		})
 }
 
 func (qs *QueryService) GetQueryById(id primitive.ObjectID) (model.Query, error) {
