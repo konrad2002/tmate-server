@@ -30,6 +30,7 @@ func (qs *QueryService) GetAllForUser(userId primitive.ObjectID) ([]model.Query,
 				bson.A{
 					bson.D{{"owner_user_id", userId}},
 					bson.D{{"owner_user_id", primitive.NilObjectID}},
+					bson.D{{"owner_user_id", bson.D{{"$exists", false}}}},
 				},
 			},
 		})
