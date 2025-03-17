@@ -54,7 +54,7 @@ func runTask(attestService service.AttestService, fieldService service.FieldServ
 		firstName := member.Data[specialFields.FirstName].(string)
 		lastName := member.Data[specialFields.LastName].(string)
 		email := member.Data[specialFields.EMail].(string)
-		date := (member.Data[specialFields.AttestDate]).(primitive.DateTime).Time().Format("02.01.2006")
+		date := (member.Data[specialFields.AttestDate]).(primitive.DateTime).Time().AddDate(1, 0, 0).Format("02.01.2006")
 		fmt.Printf("%s, %s, %s, %s\n", firstName, lastName, email, date)
 
 		// notify about attest in one month (send email)
@@ -75,7 +75,7 @@ func runTask(attestService service.AttestService, fieldService service.FieldServ
 		firstName := member.Data[specialFields.FirstName].(string)
 		lastName := member.Data[specialFields.LastName].(string)
 		email := member.Data[specialFields.EMail].(string)
-		date := (member.Data[specialFields.AttestDate]).(primitive.DateTime).Time().Format("02.01.2006")
+		date := (member.Data[specialFields.AttestDate]).(primitive.DateTime).Time().AddDate(1, 0, 0).Format("02.01.2006")
 		fmt.Printf("%s, %s, %s, %s\n", firstName, lastName, email, date)
 
 		// notify about attest missing (send email)
