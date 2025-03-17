@@ -67,7 +67,9 @@ func (es *ExportService) membersAndFieldsToExcel(result dto.QueryResultDto) (*by
 	for i, member := range result.Members {
 		for j, field := range result.Fields {
 			if field.Type == model.Date {
-				f.SetCellValue("Mitglieder", fmt.Sprintf("%s%d", numberToColumn(j), i+2), (member.Data[field.Name]).(primitive.DateTime).Time().Format("02.01.2006"))
+				if member.Data[field.Name] != nil {
+					f.SetCellValue("Mitglieder", fmt.Sprintf("%s%d", numberToColumn(j), i+2), (member.Data[field.Name]).(primitive.DateTime).Time().Format("02.01.2006"))
+				}
 				continue
 			}
 			if field.Type == model.Select {
