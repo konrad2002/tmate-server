@@ -7,6 +7,7 @@ import (
 	"github.com/konrad2002/tmate-server/model"
 	"github.com/xuri/excelize/v2"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"strings"
 	"time"
 )
 
@@ -69,9 +70,20 @@ func (es *ExportService) membersAndFieldsToExcel(result dto.QueryResultDto) (*by
 				f.SetCellValue("Mitglieder", fmt.Sprintf("%s%d", numberToColumn(j), i+2), (member.Data[field.Name]).(primitive.DateTime).Time().Format("02.01.2006"))
 				continue
 			}
-			if field.Type == model.Select || field.Type == model.MultiSelect {
+			if field.Type == model.Select {
 				if member.Data[field.Name] != nil {
 					f.SetCellValue("Mitglieder", fmt.Sprintf("%s%d", numberToColumn(j), i+2), field.Data.Options[member.Data[field.Name].(string)])
+				}
+				continue
+			}
+			if field.Type == model.MultiSelect {
+				if member.Data[field.Name] != nil {
+					keys := member.Data[field.Name].(primitive.A)
+					var values []string
+					for _, key := range keys {
+						values = append(values, field.Data.Options[key.(string)])
+					}
+					f.SetCellValue("Mitglieder", fmt.Sprintf("%s%d", numberToColumn(j), i+2), strings.Join(values[:], ", "))
 				}
 				continue
 			}
