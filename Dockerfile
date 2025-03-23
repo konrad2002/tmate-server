@@ -5,6 +5,7 @@ FROM golang:1.24-alpine
 WORKDIR /app
 
 COPY tmate-server /app/service
+COPY assets/ /app/assets
 RUN chmod +x /app/service
 RUN mkdir /app/logs
 
