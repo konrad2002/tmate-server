@@ -18,14 +18,16 @@ type MemberService struct {
 	queryService     QueryService
 	fieldService     FieldService
 	configService    ConfigService
+	historyService   HistoryService
 }
 
-func NewMemberService(mr repository.MemberRepository, qs QueryService, fs FieldService, cs ConfigService) MemberService {
+func NewMemberService(mr repository.MemberRepository, qs QueryService, fs FieldService, cs ConfigService, hs HistoryService) MemberService {
 	return MemberService{
 		memberRepository: mr,
 		queryService:     qs,
 		fieldService:     fs,
 		configService:    cs,
+		historyService:   hs,
 	}
 }
 
@@ -186,7 +188,14 @@ func (ms *MemberService) AddMember(member model.Member, familyMemberId primitive
 		return model.Member{}, err
 	}
 
-	return ms.memberRepository.SaveMember(member)
+	newMember, err := ms.memberRepository.SaveMember(member)
+	if err != nil {
+		return model.Member{}, err
+	}
+
+	ms.historyService.LogMemberAction(primitive.NilObjectID, model.HistoryActionCreate, newMember.Identifier)
+
+	return newMember, nil
 }
 
 func (ms *MemberService) UpdateMember(member model.Member, familyMemberId primitive.ObjectID) (model.Member, error) {
@@ -203,7 +212,14 @@ func (ms *MemberService) UpdateMember(member model.Member, familyMemberId primit
 		return model.Member{}, err
 	}
 
-	return ms.memberRepository.UpdateMember(member)
+	newMember, err := ms.memberRepository.UpdateMember(member)
+	if err != nil {
+		return model.Member{}, err
+	}
+
+	ms.historyService.LogMemberAction(primitive.NilObjectID, model.HistoryActionModify, newMember.Identifier)
+
+	return newMember, nil
 }
 
 func (ms *MemberService) createOrAddFamily(member model.Member, familyMemberId primitive.ObjectID) (model.Member, error) {

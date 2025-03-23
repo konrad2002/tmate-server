@@ -7,20 +7,23 @@ import (
 	"fmt"
 	"github.com/konrad2002/tmate-server/dto"
 	"github.com/konrad2002/tmate-server/misc"
+	"github.com/konrad2002/tmate-server/model"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"html/template"
 	"net/smtp"
 )
 
 type EmailService struct {
-	configService ConfigService
-	memberService MemberService
+	configService  ConfigService
+	memberService  MemberService
+	historyService HistoryService
 }
 
-func NewEmailService(cs ConfigService, ms MemberService) EmailService {
+func NewEmailService(cs ConfigService, ms MemberService, hs HistoryService) EmailService {
 	return EmailService{
-		configService: cs,
-		memberService: ms,
+		configService:  cs,
+		memberService:  ms,
+		historyService: hs,
 	}
 }
 
@@ -41,7 +44,7 @@ func (ems *EmailService) GetEmailSenders() (*[]dto.EmailSenderDto, error) {
 	return &senderDtos, nil
 }
 
-func (ems *EmailService) sendEmail(sender string, receiver string, subject string, content *bytes.Buffer) error {
+func (ems *EmailService) sendEmail(sender string, receiver string, subject string, content *bytes.Buffer, member model.Member) error {
 	fmt.Printf("try to send mail '%s' from '%s' to '%s'\n", subject, sender, receiver)
 	fmt.Printf("Body: %s\n", content)
 
@@ -132,6 +135,8 @@ func (ems *EmailService) sendEmail(sender string, receiver string, subject strin
 
 	fmt.Printf("Email sent successfully to %s!", receiver)
 
+	ems.historyService.LogEMailAction(primitive.NilObjectID, member.Identifier, body.String())
+
 	return nil
 }
 
@@ -166,7 +171,7 @@ func (ems *EmailService) SendEmailFromTemplate(sender string, receivers []primit
 			errs = append(errs, errors.New(fmt.Sprintf("failed to parse template user: %s; %s\n", receiver, err.Error())))
 		}
 
-		err = ems.sendEmail(sender, email, subject, &body)
+		err = ems.sendEmail(sender, email, subject, &body, member)
 		if err != nil {
 			errs = append(errs, errors.New(fmt.Sprintf("failed to send mail for user: %s; %s\n", receiver, err.Error())))
 		}
@@ -182,7 +187,7 @@ func (ems *EmailService) SendEmailFromTemplate(sender string, receivers []primit
 	return nil
 }
 
-func (ems *EmailService) SendAttestEmail(firstName string, lastName string, email string, date string, subject string, tmpl string) error {
+func (ems *EmailService) SendAttestEmail(firstName string, lastName string, email string, date string, subject string, tmpl string, member model.Member) error {
 	// BODY
 
 	t, _ := template.ParseFiles(tmpl)
@@ -202,7 +207,7 @@ func (ems *EmailService) SendAttestEmail(firstName string, lastName string, emai
 		return err
 	}
 
-	err = ems.sendEmail("attest@schwimmteamerzgebirge.de", email, subject, &body)
+	err = ems.sendEmail("attest@schwimmteamerzgebirge.de", email, subject, &body, member)
 	if err != nil {
 		return err
 	}

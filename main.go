@@ -26,6 +26,7 @@ var (
 	as  service.AttestService
 	es  service.ExportService
 	us  service.UserService
+	hs  service.HistoryService
 	ems service.EmailService
 
 	mc  controller.MemberController
@@ -58,15 +59,17 @@ func init() {
 	fr := repository.NewFieldRepository(mongoCon)
 	qr := repository.NewQueryRepository(mongoCon)
 	ur := repository.NewUserRepository(mongoCon)
+	hr := repository.NewHistoryRepository(mongoCon)
 
+	hs = service.NewHistoryService(hr)
 	fs = service.NewFieldService(fr)
-	qs = service.NewQueryService(qr)
+	qs = service.NewQueryService(qr, hs)
 	cs = service.NewConfigService()
-	ms = service.NewMemberService(mr, qs, fs, cs)
+	ms = service.NewMemberService(mr, qs, fs, cs, hs)
 	as = service.NewAttestService(ms)
 	es = service.NewExportService(ms)
 	us = service.NewUserService(ur)
-	ems = service.NewEmailService(cs, ms)
+	ems = service.NewEmailService(cs, ms, hs)
 
 	mc = controller.NewMemberController(ms, us)
 	fc = controller.NewFieldController(fs, us)

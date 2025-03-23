@@ -11,11 +11,13 @@ import (
 
 type QueryService struct {
 	queryRepository repository.QueryRepository
+	historyService  HistoryService
 }
 
-func NewQueryService(qr repository.QueryRepository) QueryService {
+func NewQueryService(qr repository.QueryRepository, hs HistoryService) QueryService {
 	return QueryService{
 		queryRepository: qr,
+		historyService:  hs,
 	}
 }
 
@@ -90,12 +92,28 @@ func (qs *QueryService) SaveExample() (model.Query, error) {
 
 func (qs *QueryService) AddQuery(query model.Query) (model.Query, error) {
 	query.Filter = misc.ConvertToBSOND(query.FilterJson)
-	return qs.queryRepository.SaveQuery(query)
+
+	newQuery, err := qs.queryRepository.SaveQuery(query)
+	if err != nil {
+		return model.Query{}, err
+	}
+
+	qs.historyService.LogQueryAction(primitive.NilObjectID, model.HistoryActionCreate, newQuery.Identifier)
+
+	return newQuery, nil
 }
 
 func (qs *QueryService) UpdateQuery(query model.Query) (model.Query, error) {
 	query.Filter = misc.ConvertToBSOND(query.FilterJson)
-	return qs.queryRepository.UpdateQuery(query)
+
+	newQuery, err := qs.queryRepository.UpdateQuery(query)
+	if err != nil {
+		return model.Query{}, err
+	}
+
+	qs.historyService.LogQueryAction(primitive.NilObjectID, model.HistoryActionModify, newQuery.Identifier)
+
+	return newQuery, nil
 }
 
 func (qs *QueryService) RemoveQuery(id primitive.ObjectID) (model.Query, error) {

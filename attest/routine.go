@@ -58,7 +58,7 @@ func runTask(attestService service.AttestService, fieldService service.FieldServ
 		fmt.Printf("%s, %s, %s, %s\n", firstName, lastName, email, date)
 
 		// notify about attest in one month (send email)
-		err := emailService.SendAttestEmail(firstName, lastName, email, date, "Ärztliches Attest bald ungültig", "assets/templates/attest_email_warning.html")
+		err := emailService.SendAttestEmail(firstName, lastName, email, date, "Ärztliches Attest bald ungültig", "assets/templates/attest_email_warning.html", member)
 		if err != nil {
 			fmt.Printf("\033[37mfailed to send mail: %s\033[0m\n", err)
 		}
@@ -79,7 +79,7 @@ func runTask(attestService service.AttestService, fieldService service.FieldServ
 		fmt.Printf("%s, %s, %s, %s\n", firstName, lastName, email, date)
 
 		// notify about attest missing (send email)
-		err := emailService.SendAttestEmail(firstName, lastName, email, date, "Ärztliches Attest ungültig!", "assets/templates/attest_email_missing.html")
+		err := emailService.SendAttestEmail(firstName, lastName, email, date, "Ärztliches Attest ungültig!", "assets/templates/attest_email_missing.html", member)
 		if err != nil {
 			fmt.Printf("\033[37mfailed to send mail: %s\033[0m\n", err)
 		}
