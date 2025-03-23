@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-var notificationHour = 19
+var notificationHour = 20
 
 func StartAttestRoutine(attestService service.AttestService, fieldService service.FieldService, configService service.ConfigService, emailService service.EmailService) {
 	go func() {
