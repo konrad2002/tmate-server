@@ -36,6 +36,7 @@ var (
 	ec  controller.ExportController
 	uc  controller.UserController
 	emc controller.EmailController
+	ac  controller.AttestController
 
 	ctx         context.Context
 	mongoClient *mongo.Client
@@ -66,10 +67,10 @@ func init() {
 	qs = service.NewQueryService(qr, hs)
 	cs = service.NewConfigService()
 	ms = service.NewMemberService(mr, qs, fs, cs, hs)
-	as = service.NewAttestService(ms)
 	es = service.NewExportService(ms)
 	us = service.NewUserService(ur)
 	ems = service.NewEmailService(cs, ms, hs)
+	as = service.NewAttestService(ms, fs, cs, ems)
 
 	mc = controller.NewMemberController(ms, us)
 	fc = controller.NewFieldController(fs, us)
@@ -78,6 +79,7 @@ func init() {
 	ec = controller.NewExportController(es, us)
 	uc = controller.NewUserController(us)
 	emc = controller.NewEmailController(ems, us)
+	ac = controller.NewAttestController(as, us)
 
 	server = gin.Default()
 }
@@ -116,6 +118,7 @@ func main() {
 	ec.RegisterRoutes(basePath)
 	uc.RegisterRoutes(basePath)
 	emc.RegisterRoutes(basePath)
+	ac.RegisterRoutes(basePath)
 
 	port := os.Getenv("TMATE_PORT")
 
@@ -124,7 +127,7 @@ func main() {
 		return
 	}
 
-	attest.StartAttestRoutine(as, fs, cs, ems)
+	attest.StartAttestRoutine(as)
 
 	log.Fatal(server.Run(":" + port))
 }
