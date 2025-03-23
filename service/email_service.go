@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/konrad2002/tmate-server/dto"
-	"github.com/konrad2002/tmate-server/misc"
 	"github.com/konrad2002/tmate-server/model"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"html/template"
@@ -46,19 +45,19 @@ func (ems *EmailService) GetEmailSenders() (*[]dto.EmailSenderDto, error) {
 
 func (ems *EmailService) sendEmail(sender string, receiver string, subject string, content *bytes.Buffer, member model.Member) error {
 	fmt.Printf("try to send mail '%s' from '%s' to '%s'\n", subject, sender, receiver)
-	fmt.Printf("Body: %s\n", content)
+	//fmt.Printf("Body: %s\n", content)
 
 	mailConfig, err := ems.configService.GetMailConfig(sender)
 	if err != nil {
 		return err
 	}
 
-	allowedMails := []string{"konrad@schwimmteamerzgebirge.de", "konrad2002@arcor.de", "dr.weiss@arcor.de", "johann2005@arcor.de", "ubuntovka@gmail.com"}
+	//allowedMails := []string{"konrad@schwimmteamerzgebirge.de", "konrad2002@arcor.de", "dr.weiss@arcor.de", "johann2005@arcor.de", "ubuntovka@gmail.com"}
 	//allowedMails := []string{"konrad@schwimmteamerzgebirge.de"}
 
-	if !misc.Contains(allowedMails, receiver) {
-		return errors.New("illegal receiver in testing")
-	}
+	//if !misc.Contains(allowedMails, receiver) {
+	//	return errors.New("illegal receiver in testing")
+	//}
 
 	// SMTP Server details
 	smtpServer := mailConfig.Smtp.Host
@@ -107,6 +106,10 @@ func (ems *EmailService) sendEmail(sender string, receiver string, subject strin
 		fmt.Println("Recipient Error:", err)
 		return err
 	}
+	if err := client.Rcpt("webmaster@schwimmteamerzgebirge.de"); err != nil {
+		fmt.Println("Recipient Error:", err)
+		return err
+	}
 
 	// Write message
 	wc, err := client.Data()
@@ -133,7 +136,7 @@ func (ems *EmailService) sendEmail(sender string, receiver string, subject strin
 	// Quit the session
 	client.Quit()
 
-	fmt.Printf("Email sent successfully to %s!", receiver)
+	fmt.Printf("Email sent successfully to %s!\n", receiver)
 
 	ems.historyService.LogEMailAction(primitive.NilObjectID, member.Identifier, body.String())
 
