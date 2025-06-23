@@ -102,7 +102,7 @@ func main() {
 	})
 
 	server.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://tmate.weiss-konrad.de", "http://localhost:4200"},
+		AllowOrigins:     []string{"https://tmate.weiss-konrad.de", "http://localhost:4200", "https://tmate.st-erz.de"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Authorization", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
