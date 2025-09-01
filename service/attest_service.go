@@ -35,8 +35,8 @@ func (as *AttestService) GetMembersWithAttestInOneMonth() ([]model.Member, error
 				bson.A{
 					bson.D{
 						{"data.attest_benoetigt", true},
-						{"data.attestdatum", bson.D{{"$lt", time.Date(now.Year()-1, now.Month()+1, now.Day()+1, 0, 0, 0, 0, now.Location())}}},
-						{"data.attestdatum", bson.D{{"$gte", time.Date(now.Year()-1, now.Month()+1, now.Day(), 0, 0, 0, 0, now.Location())}}},
+						{"data.attestdatum", bson.D{{"$lt", now.AddDate(0, 0, +30)}}},  // 31.9. => 1.10.
+						{"data.attestdatum", bson.D{{"$gte", now.AddDate(0, 0, +29)}}}, // 30.9.
 					},
 				},
 			},
@@ -69,8 +69,8 @@ func (as *AttestService) GetMembersWithAttestOverdueToday() ([]model.Member, err
 				bson.A{
 					bson.D{
 						{"data.attest_benoetigt", true},
-						{"data.attestdatum", bson.D{{"$lt", time.Date(now.Year()-1, now.Month(), now.Day()+1, 0, 0, 0, 0, now.Location())}}},
-						{"data.attestdatum", bson.D{{"$gte", time.Date(now.Year()-1, now.Month(), now.Day(), 0, 0, 0, 0, now.Location())}}},
+						{"data.attestdatum", bson.D{{"$lt", now.AddDate(0, 0, 1)}}}, // 2.9.
+						{"data.attestdatum", bson.D{{"$gte", now}}},                 // 1.9.
 					},
 				},
 			},
