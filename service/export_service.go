@@ -61,20 +61,20 @@ func (es *ExportService) membersAndFieldsToExcel(result dto.QueryResultDto) (*by
 	f.SetCellValue("Abfrage", "B4", time.Now().Format("02.01.2006 15:04:05"))
 
 	for i, field := range result.Fields {
-		f.SetCellValue("Mitglieder", fmt.Sprintf("%s%d", numberToColumn(i), 1), field.DisplayName)
+		f.SetCellValue("Mitglieder", fmt.Sprintf("%s%d", NumberToColumn(i), 1), field.DisplayName)
 	}
 
 	for i, member := range result.Members {
 		for j, field := range result.Fields {
 			if field.Type == model.Date {
 				if member.Data[field.Name] != nil {
-					f.SetCellValue("Mitglieder", fmt.Sprintf("%s%d", numberToColumn(j), i+2), (member.Data[field.Name]).(primitive.DateTime).Time().Format("02.01.2006"))
+					f.SetCellValue("Mitglieder", fmt.Sprintf("%s%d", NumberToColumn(j), i+2), (member.Data[field.Name]).(primitive.DateTime).Time().Format("02.01.2006"))
 				}
 				continue
 			}
 			if field.Type == model.Select {
 				if member.Data[field.Name] != nil {
-					f.SetCellValue("Mitglieder", fmt.Sprintf("%s%d", numberToColumn(j), i+2), field.Data.Options[member.Data[field.Name].(string)])
+					f.SetCellValue("Mitglieder", fmt.Sprintf("%s%d", NumberToColumn(j), i+2), field.Data.Options[member.Data[field.Name].(string)])
 				}
 				continue
 			}
@@ -85,11 +85,11 @@ func (es *ExportService) membersAndFieldsToExcel(result dto.QueryResultDto) (*by
 					for _, key := range keys {
 						values = append(values, field.Data.Options[key.(string)])
 					}
-					f.SetCellValue("Mitglieder", fmt.Sprintf("%s%d", numberToColumn(j), i+2), strings.Join(values[:], ", "))
+					f.SetCellValue("Mitglieder", fmt.Sprintf("%s%d", NumberToColumn(j), i+2), strings.Join(values[:], ", "))
 				}
 				continue
 			}
-			f.SetCellValue("Mitglieder", fmt.Sprintf("%s%d", numberToColumn(j), i+2), member.Data[field.Name])
+			f.SetCellValue("Mitglieder", fmt.Sprintf("%s%d", NumberToColumn(j), i+2), member.Data[field.Name])
 		}
 	}
 
@@ -110,7 +110,16 @@ func (es *ExportService) membersAndFieldsToExcel(result dto.QueryResultDto) (*by
 	return buf, nil
 }
 
-func numberToColumn(n int) string {
+// NumberToColumn converts a number to an Excel column value
+// like
+// 0  -> A
+// 2  -> C
+// 25 -> Z
+// 26 -> AA
+// 27 -> AB
+// 28 -> AC
+func NumberToColumn(n int) string {
+	n = n + 1
 	column := ""
 	for n > 0 {
 		n-- // Adjust for 1-based indexing
