@@ -48,6 +48,13 @@ func (mc *MemberController) ok(c *gin.Context) {
 }
 
 func (mc *MemberController) getAllMembers(c *gin.Context) {
+	u, _ := c.Get("currentUser")
+	user := u.(dto.UserInfoDto)
+	if user.Permissions.MemberAdmin < model.PermissionLevelRead {
+		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "no read member permissions"})
+		return
+	}
+
 	members, err := mc.memberService.GetAll()
 	if err != nil {
 		fmt.Print(err.Error())
@@ -59,6 +66,13 @@ func (mc *MemberController) getAllMembers(c *gin.Context) {
 }
 
 func (mc *MemberController) getFamilies(c *gin.Context) {
+	u, _ := c.Get("currentUser")
+	user := u.(dto.UserInfoDto)
+	if user.Permissions.MemberAdmin < model.PermissionLevelRead {
+		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "no read member permissions"})
+		return
+	}
+
 	families, err := mc.memberService.GetFamilies()
 	if err != nil {
 		println(err.Error())
@@ -70,6 +84,13 @@ func (mc *MemberController) getFamilies(c *gin.Context) {
 }
 
 func (mc *MemberController) runMemberQuery(c *gin.Context) {
+	u, _ := c.Get("currentUser")
+	user := u.(dto.UserInfoDto)
+	if user.Permissions.MemberAdmin < model.PermissionLevelRead {
+		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "no read member permissions"})
+		return
+	}
+
 	queryId, convErr := primitive.ObjectIDFromHex(c.Param("queryId"))
 	if convErr != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given id was not of type ObjectID"})
@@ -96,6 +117,13 @@ func (mc *MemberController) runMemberQuery(c *gin.Context) {
 }
 
 func (mc *MemberController) getMemberById(c *gin.Context) {
+	u, _ := c.Get("currentUser")
+	user := u.(dto.UserInfoDto)
+	if user.Permissions.MemberAdmin < model.PermissionLevelRead {
+		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "no read member permissions"})
+		return
+	}
+
 	id, convErr := primitive.ObjectIDFromHex(c.Param("id"))
 	if convErr != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given id was not of type ObjectID"})
@@ -113,6 +141,13 @@ func (mc *MemberController) getMemberById(c *gin.Context) {
 }
 
 func (mc *MemberController) addMember(c *gin.Context) {
+	u, _ := c.Get("currentUser")
+	user := u.(dto.UserInfoDto)
+	if user.Permissions.MemberAdmin < model.PermissionLevelWrite {
+		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "no write member permissions"})
+		return
+	}
+
 	var member model.Member
 	if err := c.BindJSON(&member); err != nil {
 		println(err.Error())
@@ -141,6 +176,13 @@ func (mc *MemberController) addMember(c *gin.Context) {
 }
 
 func (mc *MemberController) importMembers(c *gin.Context) {
+	u, _ := c.Get("currentUser")
+	user := u.(dto.UserInfoDto)
+	if user.Permissions.MemberAdmin < model.PermissionLevelWrite {
+		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "no write member permissions"})
+		return
+	}
+
 	var members []model.Member
 	if err := c.BindJSON(&members); err != nil {
 		println(err.Error())
@@ -171,6 +213,13 @@ func (mc *MemberController) importMembers(c *gin.Context) {
 }
 
 func (mc *MemberController) updateMember(c *gin.Context) {
+	u, _ := c.Get("currentUser")
+	user := u.(dto.UserInfoDto)
+	if user.Permissions.MemberAdmin < model.PermissionLevelWrite {
+		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "no write member permissions"})
+		return
+	}
+
 	var member model.Member
 	if err := c.BindJSON(&member); err != nil {
 		println(err.Error())

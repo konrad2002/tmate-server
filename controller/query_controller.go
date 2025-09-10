@@ -153,6 +153,13 @@ func (qc *QueryController) updateQuery(c *gin.Context) {
 }
 
 func (qc *QueryController) removeQuery(c *gin.Context) {
+	u, _ := c.Get("currentUser")
+	currentUser := u.(dto.UserInfoDto)
+	if !currentUser.Permissions.QueryManagement {
+		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "no query management permissions"})
+		return
+	}
+
 	id, convErr := primitive.ObjectIDFromHex(c.Param("id"))
 	if convErr != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given id was not of type ObjectID"})

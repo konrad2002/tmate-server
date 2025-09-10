@@ -52,6 +52,13 @@ func (uc *UserController) ok(c *gin.Context) {
 }
 
 func (uc *UserController) getAllUsers(c *gin.Context) {
+	u, _ := c.Get("currentUser")
+	currentUser := u.(dto.UserInfoDto)
+	if !currentUser.Permissions.UserManagement {
+		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "no user management permissions"})
+		return
+	}
+
 	users, err := uc.userService.GetAll()
 	if err != nil {
 		fmt.Print(err.Error())
@@ -63,6 +70,13 @@ func (uc *UserController) getAllUsers(c *gin.Context) {
 }
 
 func (uc *UserController) getUserById(c *gin.Context) {
+	u, _ := c.Get("currentUser")
+	currentUser := u.(dto.UserInfoDto)
+	if !currentUser.Permissions.UserManagement {
+		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "no user management permissions"})
+		return
+	}
+
 	id, convErr := primitive.ObjectIDFromHex(c.Param("id"))
 	if convErr != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given id was not of type ObjectID"})
@@ -80,6 +94,13 @@ func (uc *UserController) getUserById(c *gin.Context) {
 }
 
 func (uc *UserController) getUserByUsername(c *gin.Context) {
+	u, _ := c.Get("currentUser")
+	currentUser := u.(dto.UserInfoDto)
+	if !currentUser.Permissions.UserManagement {
+		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "no user management permissions"})
+		return
+	}
+
 	username := c.Param("username")
 	if username == "" {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "no username given"})
@@ -142,6 +163,13 @@ func (uc *UserController) changePasswordForMe(c *gin.Context) {
 }
 
 func (uc *UserController) changePasswordForUser(c *gin.Context) {
+	u, _ := c.Get("currentUser")
+	currentUser := u.(dto.UserInfoDto)
+	if !currentUser.Permissions.UserManagement {
+		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "no user management permissions"})
+		return
+	}
+
 	username := c.Param("username")
 	if username == "" {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "no username given"})
@@ -171,6 +199,13 @@ func (uc *UserController) changePasswordForUser(c *gin.Context) {
 }
 
 func (uc *UserController) createUser(c *gin.Context) {
+	u, _ := c.Get("currentUser")
+	u2 := u.(dto.UserInfoDto)
+	if !u2.Permissions.UserManagement {
+		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "no user management permissions"})
+		return
+	}
+
 	var user dto.CreateUserDto
 	if err := c.BindJSON(&user); err != nil {
 		println(err.Error())
@@ -207,6 +242,13 @@ func (uc *UserController) login(c *gin.Context) {
 }
 
 func (uc *UserController) removeUser(c *gin.Context) {
+	u, _ := c.Get("currentUser")
+	currentUser := u.(dto.UserInfoDto)
+	if !currentUser.Permissions.UserManagement {
+		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "no user management permissions"})
+		return
+	}
+
 	id, convErr := primitive.ObjectIDFromHex(c.Param("id"))
 	if convErr != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given id was not of type ObjectID"})

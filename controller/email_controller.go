@@ -49,10 +49,18 @@ func (emc *EmailController) getEmailSenders(c *gin.Context) {
 }
 
 func (emc *EmailController) sendMail(c *gin.Context) {
+
 	var email dto.SendEmailDto
 	if err := c.BindJSON(&email); err != nil {
 		println(err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	u, _ := c.Get("currentUser")
+	currentUser := u.(dto.UserInfoDto)
+	if !currentUser.Permissions.EmailAddressUsage[email.Sender] {
+		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "no email permissions for " + email.Sender})
 		return
 	}
 

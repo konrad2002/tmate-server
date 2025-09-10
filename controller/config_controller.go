@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/konrad2002/tmate-server/auth"
+	"github.com/konrad2002/tmate-server/dto"
 	"github.com/konrad2002/tmate-server/service"
 	"net/http"
 )
@@ -54,6 +55,13 @@ func (cc *ConfigController) getConfig(c *gin.Context) {
 }
 
 func (cc *ConfigController) initConfig(c *gin.Context) {
+	u, _ := c.Get("currentUser")
+	currentUser := u.(dto.UserInfoDto)
+	if !currentUser.Permissions.SuperUser {
+		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "no permissions"})
+		return
+	}
+
 	err := cc.configService.InitConfig()
 
 	if err != nil {

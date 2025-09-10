@@ -30,15 +30,25 @@ type Role struct {
 	Permissions Permission `json:"permissions" bson:"permissions,omitempty"`
 }
 
+type PermissionLevel int
+
+const (
+	PermissionLevelNone   PermissionLevel = iota
+	PermissionLevelRead   PermissionLevel = iota
+	PermissionLevelWrite  PermissionLevel = iota
+	PermissionLevelDelete PermissionLevel = iota
+)
+
 type Permission struct {
 	// int fields: 0; 1=read; 2=write; 3=delete
-	UserManagement           bool                      `json:"user_management" bson:"user_management"`
-	TableStructureManagement bool                      `json:"table_structure_management" bson:"table_structure_management"`
-	EmailAddressManagement   bool                      `json:"email_address_management" bson:"email_address_management"`
-	EmailAddressUsage        map[string]bool           `json:"email_address_usage" bson:"email_address_usage"`
-	BypassEmailRegex         bool                      `json:"bypass_email_regex" bson:"bypass_email_regex"`
-	QueryManagement          bool                      `json:"query_management" bson:"query_management"`
-	MemberAdmin              int                       `json:"member_admin" bson:"member_admin"`
-	Member                   map[string]map[string]int `json:"member" bson:"member"`
+	SuperUser                bool                      `json:"super_user" bson:"super_user"`                                 // unused
+	UserManagement           bool                      `json:"user_management" bson:"user_management"`                       // unused
+	TableStructureManagement bool                      `json:"table_structure_management" bson:"table_structure_management"` // unused
+	EmailAddressManagement   bool                      `json:"email_address_management" bson:"email_address_management"`     // unused
+	EmailAddressUsage        map[string]bool           `json:"email_address_usage" bson:"email_address_usage"`               // unused
+	BypassEmailRegex         bool                      `json:"bypass_email_regex" bson:"bypass_email_regex"`                 // unused
+	QueryManagement          bool                      `json:"query_management" bson:"query_management"`                     // unused
+	MemberAdmin              PermissionLevel           `json:"member_admin" bson:"member_admin"`                             // unused
+	Member                   map[string]map[string]int `json:"member" bson:"member"`                                         // unused
 	// 						 group x column
 }
