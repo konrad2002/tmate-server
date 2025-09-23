@@ -41,14 +41,14 @@ const (
 
 type Permission struct {
 	// int fields: 0; 1=read; 2=write; 3=delete
-	SuperUser                bool                      `json:"super_user" bson:"super_user"`                                 // unused
-	UserManagement           bool                      `json:"user_management" bson:"user_management"`                       // unused
+	SuperUser                bool                      `json:"super_user" bson:"super_user"`                                 // used only for config init, does not overwrite other perms
+	UserManagement           bool                      `json:"user_management" bson:"user_management"`                       // used
 	TableStructureManagement bool                      `json:"table_structure_management" bson:"table_structure_management"` // unused
 	EmailAddressManagement   bool                      `json:"email_address_management" bson:"email_address_management"`     // unused
-	EmailAddressUsage        map[string]bool           `json:"email_address_usage" bson:"email_address_usage"`               // unused
+	EmailAddressUsage        map[string]bool           `json:"email_address_usage" bson:"email_address_usage"`               // used
 	BypassEmailRegex         bool                      `json:"bypass_email_regex" bson:"bypass_email_regex"`                 // unused
-	QueryManagement          bool                      `json:"query_management" bson:"query_management"`                     // unused
-	MemberAdmin              PermissionLevel           `json:"member_admin" bson:"member_admin"`                             // unused
+	QueryManagement          bool                      `json:"query_management" bson:"query_management"`                     // used
+	MemberAdmin              PermissionLevel           `json:"member_admin" bson:"member_admin"`                             // used
 	Member                   map[string]map[string]int `json:"member" bson:"member"`                                         // unused
 	// 						 group x column
 }

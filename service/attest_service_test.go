@@ -17,21 +17,21 @@ func TestAttestService_DateRange(t *testing.T) {
 	now3 := time.Date(2025, 9, 1, 14, 0, 0, 0, time.UTC)
 
 	attests := []*visitedDate{
-		{false, time.Date(2025, 9, 28, 13, 0, 0, 0, time.UTC)},
-		{false, time.Date(2025, 9, 28, 14, 0, 0, 0, time.UTC)},
-		{false, time.Date(2025, 9, 28, 15, 0, 0, 0, time.UTC)},
-		{false, time.Date(2025, 9, 29, 13, 0, 0, 0, time.UTC)},
-		{false, time.Date(2025, 9, 29, 14, 0, 0, 0, time.UTC)},
-		{false, time.Date(2025, 9, 29, 15, 0, 0, 0, time.UTC)},
-		{false, time.Date(2025, 9, 30, 13, 0, 0, 0, time.UTC)},
-		{false, time.Date(2025, 9, 30, 14, 0, 0, 0, time.UTC)},
-		{false, time.Date(2025, 9, 30, 15, 0, 0, 0, time.UTC)},
-		{false, time.Date(2025, 10, 1, 13, 0, 0, 0, time.UTC)},
-		{false, time.Date(2025, 10, 1, 14, 0, 0, 0, time.UTC)},
-		{false, time.Date(2025, 10, 1, 15, 0, 0, 0, time.UTC)},
-		{false, time.Date(2025, 10, 2, 13, 0, 0, 0, time.UTC)},
-		{false, time.Date(2025, 10, 2, 14, 0, 0, 0, time.UTC)},
-		{false, time.Date(2025, 10, 2, 15, 0, 0, 0, time.UTC)},
+		{false, time.Date(2024, 9, 28, 13, 0, 0, 0, time.UTC)},
+		{false, time.Date(2024, 9, 28, 14, 0, 0, 0, time.UTC)},
+		{false, time.Date(2024, 9, 28, 15, 0, 0, 0, time.UTC)},
+		{false, time.Date(2024, 9, 29, 13, 0, 0, 0, time.UTC)},
+		{false, time.Date(2024, 9, 29, 14, 0, 0, 0, time.UTC)},
+		{false, time.Date(2024, 9, 29, 15, 0, 0, 0, time.UTC)},
+		{false, time.Date(2024, 9, 30, 13, 0, 0, 0, time.UTC)},
+		{false, time.Date(2024, 9, 30, 14, 0, 0, 0, time.UTC)},
+		{false, time.Date(2024, 9, 30, 15, 0, 0, 0, time.UTC)},
+		{false, time.Date(2024, 10, 1, 13, 0, 0, 0, time.UTC)},
+		{false, time.Date(2024, 10, 1, 14, 0, 0, 0, time.UTC)},
+		{false, time.Date(2024, 10, 1, 15, 0, 0, 0, time.UTC)},
+		{false, time.Date(2024, 10, 2, 13, 0, 0, 0, time.UTC)},
+		{false, time.Date(2024, 10, 2, 14, 0, 0, 0, time.UTC)},
+		{false, time.Date(2024, 10, 2, 15, 0, 0, 0, time.UTC)},
 	}
 
 	testRangeWithDate(now1, &attests)
@@ -52,8 +52,8 @@ func testRangeWithDate(now time.Time, attests *[]*visitedDate) {
 	fmt.Printf("Test with now = %v\n", now)
 	println("------")
 
-	after := now.AddDate(0, 0, +29)
-	before := now.AddDate(0, 0, +30)
+	after := now.AddDate(-1, 0, +29)
+	before := now.AddDate(-1, 0, +30)
 	fmt.Printf("after: %v | before: %v\n", after, before)
 
 	for _, attest := range *attests {
