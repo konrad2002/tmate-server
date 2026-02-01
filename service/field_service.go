@@ -45,3 +45,7 @@ func (fs *FieldService) GetAllForQuery(query model.Query) ([]model.Field, error)
 		},
 	)
 }
+
+func (fs *FieldService) AddField(field model.Field) (model.Field, error) {
+	return fs.fieldRepository.SaveField(field)
+}

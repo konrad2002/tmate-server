@@ -1,6 +1,9 @@
 package model
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
+)
 
 type FieldType string
 
@@ -38,6 +41,8 @@ type Field struct {
 	Data        *FieldData         `json:"data,omitempty" bson:"data,omitempty"`
 	Nullable    bool               `json:"nullable" bson:"nullable"`
 	Position    int                `json:"position" bson:"position"`
+	CreatedAt   time.Time          `json:"created_at" bson:"created_at"`
+	ModifiedAt  time.Time          `json:"modified_at,omitempty" bson:"modified_at,omitempty"`
 }
 
 type FieldData struct {

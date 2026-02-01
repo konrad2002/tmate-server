@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/konrad2002/tmate-server/model"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
@@ -78,4 +79,19 @@ func (fr *FieldRepository) GetFieldByBsonDocumentWithOptions(d interface{}, quer
 	}
 
 	return model.Field{}, errors.New("no entry found")
+}
+
+func (fr *FieldRepository) SaveField(field model.Field) (model.Field, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	field.CreatedAt = time.Now()
+	field.ModifiedAt = time.Now()
+
+	r, err := fr.collection.InsertOne(ctx, field)
+	if err != nil {
+		return model.Field{}, err
+	}
+
+	return fr.GetFieldByBsonDocument(bson.D{{"_id", r.InsertedID.(primitive.ObjectID)}})
 }
