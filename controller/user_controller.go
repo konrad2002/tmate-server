@@ -200,10 +200,13 @@ func (uc *UserController) changePasswordForUser(c *gin.Context) {
 
 func (uc *UserController) createUser(c *gin.Context) {
 	u, _ := c.Get("currentUser")
-	u2 := u.(dto.UserInfoDto)
-	if !u2.Permissions.UserManagement {
-		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "no user management permissions"})
-		return
+	t, _ := c.Get("authType")
+	if t != "Basic" {
+		u2 := u.(dto.UserInfoDto)
+		if !u2.Permissions.UserManagement {
+			c.IndentedJSON(http.StatusForbidden, gin.H{"message": "no user management permissions"})
+			return
+		}
 	}
 
 	var user dto.CreateUserDto

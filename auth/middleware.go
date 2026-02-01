@@ -45,6 +45,8 @@ func HandlerFunc(userService *service.UserService) gin.HandlerFunc {
 				return
 			}
 
+			c.Set("authType", "Basic")
+
 			c.Next()
 			return
 		}
@@ -90,6 +92,7 @@ func HandlerFunc(userService *service.UserService) gin.HandlerFunc {
 		}
 
 		c.Set("currentUser", user)
+		c.Set("authType", "Bearer")
 
 		c.Next()
 
