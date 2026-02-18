@@ -19,24 +19,26 @@ import (
 var (
 	server *gin.Engine
 
-	ms  service.MemberService
-	fs  service.FieldService
-	cs  service.ConfigService
-	qs  service.QueryService
-	as  service.AttestService
-	es  service.ExportService
-	us  service.UserService
-	hs  service.HistoryService
-	ems service.EmailService
+	ms   service.MemberService
+	fs   service.FieldService
+	cs   service.ConfigService
+	qs   service.QueryService
+	as   service.AttestService
+	es   service.ExportService
+	us   service.UserService
+	hs   service.HistoryService
+	ems  service.EmailService
+	cous service.CourseService
 
-	mc  controller.MemberController
-	fc  controller.FieldController
-	cc  controller.ConfigController
-	qc  controller.QueryController
-	ec  controller.ExportController
-	uc  controller.UserController
-	emc controller.EmailController
-	ac  controller.AttestController
+	mc   controller.MemberController
+	fc   controller.FieldController
+	cc   controller.ConfigController
+	qc   controller.QueryController
+	ec   controller.ExportController
+	uc   controller.UserController
+	emc  controller.EmailController
+	ac   controller.AttestController
+	couc controller.CourseController
 
 	ctx         context.Context
 	mongoClient *mongo.Client
@@ -61,6 +63,7 @@ func init() {
 	qr := repository.NewQueryRepository(mongoCon)
 	ur := repository.NewUserRepository(mongoCon)
 	hr := repository.NewHistoryRepository(mongoCon)
+	cr := repository.NewCourseRepository(mongoCon)
 
 	hs = service.NewHistoryService(hr)
 	fs = service.NewFieldService(fr)
@@ -71,6 +74,7 @@ func init() {
 	us = service.NewUserService(ur)
 	ems = service.NewEmailService(cs, ms, hs)
 	as = service.NewAttestService(ms, fs, cs, ems)
+	cous = service.NewCourseService(cr)
 
 	mc = controller.NewMemberController(ms, us)
 	fc = controller.NewFieldController(fs, us)
@@ -80,6 +84,7 @@ func init() {
 	uc = controller.NewUserController(us)
 	emc = controller.NewEmailController(ems, us)
 	ac = controller.NewAttestController(as, us)
+	couc = controller.NewCourseController(cous, us)
 
 	server = gin.Default()
 }
@@ -119,6 +124,7 @@ func main() {
 	uc.RegisterRoutes(basePath)
 	emc.RegisterRoutes(basePath)
 	ac.RegisterRoutes(basePath)
+	couc.RegisterRoutes(basePath)
 
 	port := os.Getenv("TMATE_PORT")
 

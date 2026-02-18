@@ -17,6 +17,7 @@ const (
 	Boolean     FieldType = "boolean"
 	Date        FieldType = "date"
 	Family      FieldType = "family"
+	Courses     FieldType = "courses"
 )
 
 func GetAllFieldType() []FieldType {
@@ -30,6 +31,7 @@ func GetAllFieldType() []FieldType {
 		Boolean,
 		Date,
 		Family,
+		Courses,
 	}
 }
 
