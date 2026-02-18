@@ -6,6 +6,7 @@ import (
 	"github.com/konrad2002/tmate-server/auth"
 	"github.com/konrad2002/tmate-server/dto"
 	"github.com/konrad2002/tmate-server/service"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 )
 
@@ -27,6 +28,8 @@ func (ac *AttestController) RegisterRoutes(rg *gin.RouterGroup) {
 	router.Use(auth.HandlerFunc(&ac.userService))
 
 	router.POST("exec", ac.executeRoutine)
+	router.POST("send-email/:id/warning", ac.sendAttestEmailWarning)
+	router.POST("send-email/:id/missing", ac.sendAttestEmailMissing)
 }
 
 func (ac *AttestController) executeRoutine(c *gin.Context) {
@@ -38,6 +41,38 @@ func (ac *AttestController) executeRoutine(c *gin.Context) {
 	}
 
 	err := ac.attestService.RunAttestRountine()
+
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+	c.Status(http.StatusOK)
+}
+
+func (ac *AttestController) sendAttestEmailWarning(c *gin.Context) {
+	ac.sendAttestEmail(c, true)
+}
+
+func (ac *AttestController) sendAttestEmailMissing(c *gin.Context) {
+	ac.sendAttestEmail(c, false)
+}
+
+func (ac *AttestController) sendAttestEmail(c *gin.Context, warning bool) {
+	u, _ := c.Get("currentUser")
+	currentUser := u.(dto.UserInfoDto)
+	if !currentUser.Permissions.SuperUser {
+		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "no permissions"})
+		return
+	}
+
+	id, convErr := primitive.ObjectIDFromHex(c.Param("id"))
+	if convErr != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given id was not of type ObjectID"})
+		return
+	}
+
+	err := ac.attestService.SendAttestMailManual(id, warning)
 
 	if err != nil {
 		fmt.Print(err.Error())

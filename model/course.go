@@ -9,8 +9,9 @@ type Course struct {
 	Identifier  primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	Name        string             `json:"name" bson:"name"`
 	Location    string             `json:"location,omitempty" bson:"location,omitempty"`
-	Time        time.Time          `json:"time,omitempty" bson:"time,omitempty"`
+	Time        string             `json:"time,omitempty" bson:"time,omitempty"`
 	Price       int                `json:"price,omitempty" bson:"position,omitempty"`
+	TotalSpots  int                `json:"total_spots,omitempty" bson:"total_spots,omitempty"`
 	FreeSpots   int                `json:"free_spots,omitempty" bson:"free_spots,omitempty"`
 	Style       string             `json:"style,omitempty" bson:"style,omitempty"`
 	Level       string             `json:"level,omitempty" bson:"level,omitempty"`

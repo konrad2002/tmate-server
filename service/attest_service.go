@@ -108,17 +108,8 @@ func (as *AttestService) RunAttestRountine() error {
 
 	println("\033[36mMembers with attest being outdated in <1 month:\033[0m")
 	for _, member := range members {
-		firstName := member.Data[specialFields.FirstName].(string)
-		lastName := member.Data[specialFields.LastName].(string)
-		email := member.Data[specialFields.EMail].(string)
-		date := (member.Data[specialFields.AttestDate]).(primitive.DateTime).Time().AddDate(1, 0, 0).Format("02.01.2006")
-		fmt.Printf("%s, %s, %s, %s\n", firstName, lastName, email, date)
-
 		// notify about attest in one month (send email)
-		err := as.emailService.SendAttestEmail(firstName, lastName, email, date, "Ärztliches Attest bald ungültig", "assets/templates/attest_email_warning.html", member)
-		if err != nil {
-			fmt.Printf("\033[37mfailed to send mail: %s\033[0m\n", err)
-		}
+		as.SendAttestEmail(member, specialFields, false)
 	}
 
 	// find member with attest decay today:
@@ -129,18 +120,50 @@ func (as *AttestService) RunAttestRountine() error {
 
 	println("\033[36mMembers with attest being outdated today:\033[0m")
 	for _, member := range members2 {
-		firstName := member.Data[specialFields.FirstName].(string)
-		lastName := member.Data[specialFields.LastName].(string)
-		email := member.Data[specialFields.EMail].(string)
-		date := (member.Data[specialFields.AttestDate]).(primitive.DateTime).Time().AddDate(1, 0, 0).Format("02.01.2006")
-		fmt.Printf("%s, %s, %s, %s\n", firstName, lastName, email, date)
-
 		// notify about attest missing (send email)
-		err := as.emailService.SendAttestEmail(firstName, lastName, email, date, "Ärztliches Attest ungültig!", "assets/templates/attest_email_missing.html", member)
-		if err != nil {
-			fmt.Printf("\033[37mfailed to send mail: %s\033[0m\n", err)
-		}
+		as.SendAttestEmail(member, specialFields, false)
 	}
+
+	return nil
+}
+
+// SendAttestEmail can be used to send an attest mail
+// for a specific member. The warning parameter can be used
+// to specify if the mail should be a warning about the attest being
+// outdated in one month (true) or a notification about the attest
+// being already outdated (false).
+func (as *AttestService) SendAttestEmail(member model.Member, specialFields *model.SpecialFields, warning bool) {
+	firstName := member.Data[specialFields.FirstName].(string)
+	lastName := member.Data[specialFields.LastName].(string)
+	email := member.Data[specialFields.EMail].(string)
+	date := (member.Data[specialFields.AttestDate]).(primitive.DateTime).Time().AddDate(1, 0, 0).Format("02.01.2006")
+	fmt.Printf("%s, %s, %s, %s\n", firstName, lastName, email, date)
+
+	var err error
+
+	if warning {
+		err = as.emailService.SendAttestEmail(firstName, lastName, email, date, "Ärztliches Attest bald ungültig", "assets/templates/attest_email_warning.html", member)
+	} else {
+		err = as.emailService.SendAttestEmail(firstName, lastName, email, date, "Ärztliches Attest ungültig!", "assets/templates/attest_email_missing.html", member)
+	}
+
+	if err != nil {
+		fmt.Printf("\033[37mfailed to send mail: %s\033[0m\n", err)
+	}
+}
+
+func (as *AttestService) SendAttestMailManual(memberId primitive.ObjectID, warning bool) error {
+	member, err := as.memberService.GetById(memberId)
+	if err != nil {
+		return err
+	}
+
+	specialFields, err := as.configService.GetSpecialFields()
+	if err != nil {
+		return err
+	}
+
+	as.SendAttestEmail(member, specialFields, warning)
 
 	return nil
 }
