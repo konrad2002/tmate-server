@@ -10,6 +10,7 @@ type Course struct {
 	Name        string             `json:"name" bson:"name"`
 	Location    string             `json:"location,omitempty" bson:"location,omitempty"`
 	Time        string             `json:"time,omitempty" bson:"time,omitempty"`
+	Day         string             `json:"day,omitempty" bson:"day,omitempty"`
 	Price       int                `json:"price,omitempty" bson:"position,omitempty"`
 	TotalSpots  int                `json:"total_spots,omitempty" bson:"total_spots,omitempty"`
 	FreeSpots   int                `json:"free_spots,omitempty" bson:"free_spots,omitempty"`
