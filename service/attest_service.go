@@ -109,7 +109,7 @@ func (as *AttestService) RunAttestRountine() error {
 	println("\033[36mMembers with attest being outdated in <1 month:\033[0m")
 	for _, member := range members {
 		// notify about attest in one month (send email)
-		as.SendAttestEmail(member, specialFields, false)
+		as.SendAttestEmail(member, specialFields, true)
 	}
 
 	// find member with attest decay today:
