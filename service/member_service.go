@@ -250,7 +250,7 @@ func (ms *MemberService) createOrAddFamily(member model.Member, familyMemberId p
 	// if no family, create one
 	if !has {
 		// generate id
-		familyId = int(time.Now().UnixNano())
+		familyId = int(time.Now().Unix())
 
 		// assign to family member
 		familyMember.Data[familyField.Name] = familyId
