@@ -342,6 +342,9 @@ func (ms *MemberService) convertDataTypes(member *model.Member) error {
 				return errors.New(fmt.Sprintf("failed to convert date field: %s of member: %s was %v\n", field.Name, member.Identifier, member.Data[field.Name]))
 			}
 			break
+		case model.Courses:
+			member.Data[field.Name] = member.Data[field.Name].(model.CourseRegistration)
+			break
 		}
 	}
 
