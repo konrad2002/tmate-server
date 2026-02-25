@@ -6,6 +6,7 @@
   "family": "familie",
   "attest_date": "attestdatum",
   "attest_required": "attest_benoetigt",
+  "courses": "courses",
   "address": {
     "street": "strasse",
     "number": "nummer",
