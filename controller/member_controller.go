@@ -33,6 +33,7 @@ func (mc *MemberController) RegisterRoutes(rg *gin.RouterGroup) {
 	router.GET("id/:id", mc.getMemberById)
 	router.GET("query/:queryId", mc.runMemberQuery)
 	router.GET("families", mc.getFamilies)
+	router.GET("course/:courseId", mc.getByCourseId)
 
 	router.POST("", mc.addMember)
 	router.POST("import", mc.importMembers)
@@ -81,6 +82,30 @@ func (mc *MemberController) getFamilies(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, families)
+}
+
+func (mc *MemberController) getByCourseId(c *gin.Context) {
+	u, _ := c.Get("currentUser")
+	user := u.(dto.UserInfoDto)
+	if user.Permissions.MemberAdmin < model.PermissionLevelRead {
+		c.IndentedJSON(http.StatusForbidden, gin.H{"message": "no read member permissions"})
+		return
+	}
+
+	courseId, convErr := primitive.ObjectIDFromHex(c.Param("courseId"))
+	if convErr != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given id was not of type ObjectID"})
+		return
+	}
+
+	members, err := mc.memberService.GetMembersByCourseId(courseId)
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, members)
 }
 
 func (mc *MemberController) runMemberQuery(c *gin.Context) {

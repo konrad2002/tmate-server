@@ -174,6 +174,16 @@ func (ms *MemberService) GetAllByQuery(query model.Query) (*[]model.Member, *[]m
 	return &members, &fields, &query, nil
 }
 
+func (ms *MemberService) GetMembersByCourseId(courseId primitive.ObjectID) ([]model.Member, error) {
+
+	specialFields, err := ms.configService.GetSpecialFields()
+	if err != nil {
+		return nil, err
+	}
+
+	return ms.memberRepository.GetMembersByBsonDocument(bson.D{{"data." + specialFields.Courses + ".course_id", courseId}})
+}
+
 func (ms *MemberService) AddMember(member model.Member, familyMemberId primitive.ObjectID) (model.Member, error) {
 	if !familyMemberId.IsZero() {
 		var err error

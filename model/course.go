@@ -26,6 +26,6 @@ type Course struct {
 
 type CourseRegistration struct {
 	Identifier   primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	CourseName   string             `json:"course_name,omitempty" bson:"course_name,omitempty"`
+	CourseId     primitive.ObjectID `json:"course_id,omitempty" bson:"course_id,omitempty"`
 	RegisteredAt time.Time          `json:"registered_at" bson:"registered_at"`
 }
