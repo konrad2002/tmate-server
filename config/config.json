@@ -5,5 +5,18 @@
     "warn_distance": "1m",
     "template_warning": "/assets/templates/attest_email_warning.html",
     "template_missing": "/assets/templates/attest_email_missing.html"
+  },
+  "courses": {
+    "course_member_fields": [
+      "vorname",
+      "nachname",
+      "email",
+      "geschlecht",
+      "family",
+      "email"
+    ],
+    "defaults": {
+      "mitgliedsart": "course"
+    }
   }
 }
