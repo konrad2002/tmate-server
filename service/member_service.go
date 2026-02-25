@@ -319,7 +319,7 @@ func (ms *MemberService) convertDataTypes(member *model.Member) error {
 	}
 
 	for _, field := range fields {
-		//fmt.Printf("field: %s receive with: %v\n", field.Name, member.Data[field.Name])
+		fmt.Printf("field: %s receive with: %v\n", field.Name, member.Data[field.Name])
 		if member.Data[field.Name] == nil {
 			continue
 		}
@@ -343,7 +343,13 @@ func (ms *MemberService) convertDataTypes(member *model.Member) error {
 			}
 			break
 		case model.Courses:
-			member.Data[field.Name] = member.Data[field.Name].(model.CourseRegistration)
+			fmt.Printf("found course with data: %v\n", member.Data[field.Name])
+			courses, err := misc.ConvertTo[[]model.CourseRegistration](member.Data[field.Name])
+			if err != nil {
+				return err
+			}
+			member.Data[field.Name] = courses
+			fmt.Printf("found course with data: %v\n", member.Data[field.Name])
 			break
 		}
 	}

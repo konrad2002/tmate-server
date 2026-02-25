@@ -1,6 +1,7 @@
 package misc
 
 import (
+	"encoding/json"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -18,6 +19,16 @@ func AnyToInt(value any) (int, error) {
 	default:
 		return 0, fmt.Errorf("unsupported type: %T", v)
 	}
+}
+
+func ConvertTo[T any](input any) (T, error) {
+	var result T
+	bytes, err := json.Marshal(input)
+	if err != nil {
+		return result, err
+	}
+	err = json.Unmarshal(bytes, &result)
+	return result, err
 }
 
 // ConvertToBSOND Recursively converts JSON-decoded BSONElement array into bson.D
