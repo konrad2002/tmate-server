@@ -11,6 +11,7 @@ type SpecialFields struct {
 	AttestDate     string        `json:"attest_date"`
 	AttestRequired string        `json:"attest_required"`
 	Address        AddressFields `json:"address"`
+	Courses        string        `json:"courses"`
 }
 
 type AddressFields struct {
@@ -22,6 +23,11 @@ type AddressFields struct {
 
 type Config struct {
 	DefaultQuery primitive.ObjectID `json:"default_query"`
+	Courses      ConfigCourses      `json:"courses"`
+}
+
+type ConfigCourses struct {
+	CourseMemberFields []string `json:"course_member_fields"`
 }
 
 type EmailConfig struct {
