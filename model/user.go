@@ -45,6 +45,7 @@ type Permission struct {
 	UserManagement           bool                      `json:"user_management" bson:"user_management"`                       // used
 	TableStructureManagement bool                      `json:"table_structure_management" bson:"table_structure_management"` // unused
 	CourseManagement         bool                      `json:"course_management" bson:"course_management"`                   // unused
+	FormManagement           bool                      `json:"form_management" bson:"form_management"`                       // unused
 	EmailAddressManagement   bool                      `json:"email_address_management" bson:"email_address_management"`     // unused
 	EmailAddressUsage        map[string]bool           `json:"email_address_usage" bson:"email_address_usage"`               // used
 	BypassEmailRegex         bool                      `json:"bypass_email_regex" bson:"bypass_email_regex"`                 // unused

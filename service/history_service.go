@@ -45,6 +45,18 @@ func (hs *HistoryService) LogQueryAction(user primitive.ObjectID, action model.H
 	}
 }
 
+func (hs *HistoryService) LogFormAction(user primitive.ObjectID, action model.HistoryAction, form primitive.ObjectID) {
+	history := model.History{
+		UserId:       user,
+		Action:       action,
+		TargetFormId: form,
+	}
+	_, err := hs.historyRepository.SaveHistory(history)
+	if err != nil {
+		println("HISTORY WRITE ERROR: " + err.Error())
+	}
+}
+
 func (hs *HistoryService) LogEMailAction(user primitive.ObjectID, member primitive.ObjectID, content string) {
 	history := model.History{
 		UserId:         user,

@@ -29,6 +29,7 @@ var (
 	hs   service.HistoryService
 	ems  service.EmailService
 	cous service.CourseService
+	fms  service.FormService
 
 	mc   controller.MemberController
 	fc   controller.FieldController
@@ -39,6 +40,7 @@ var (
 	emc  controller.EmailController
 	ac   controller.AttestController
 	couc controller.CourseController
+	fmc  controller.FormController
 
 	ctx         context.Context
 	mongoClient *mongo.Client
@@ -64,6 +66,7 @@ func init() {
 	ur := repository.NewUserRepository(mongoCon)
 	hr := repository.NewHistoryRepository(mongoCon)
 	cr := repository.NewCourseRepository(mongoCon)
+	fmr := repository.NewFormRepository(mongoCon)
 
 	hs = service.NewHistoryService(hr)
 	fs = service.NewFieldService(fr)
@@ -75,6 +78,7 @@ func init() {
 	ems = service.NewEmailService(cs, ms, hs)
 	as = service.NewAttestService(ms, fs, cs, ems)
 	cous = service.NewCourseService(cr)
+	fms = service.NewFormService(fmr, hs)
 
 	mc = controller.NewMemberController(ms, us)
 	fc = controller.NewFieldController(fs, us)
@@ -85,6 +89,7 @@ func init() {
 	emc = controller.NewEmailController(ems, us)
 	ac = controller.NewAttestController(as, us)
 	couc = controller.NewCourseController(cous, us)
+	fmc = controller.NewFormController(fms, us)
 
 	server = gin.Default()
 }
@@ -125,6 +130,7 @@ func main() {
 	emc.RegisterRoutes(basePath)
 	ac.RegisterRoutes(basePath)
 	couc.RegisterRoutes(basePath)
+	fmc.RegisterRoutes(basePath)
 
 	port := os.Getenv("TMATE_PORT")
 
