@@ -26,9 +26,10 @@ func NewCourseController(courseService service.CourseService, userService servic
 func (cc *CourseController) RegisterRoutes(rg *gin.RouterGroup) {
 	router := rg.Group("/course/")
 
+	router.GET("", cc.getAllCourses)
+
 	router.Use(auth.HandlerFunc(&cc.userService))
 
-	router.GET("", cc.getAllCourses)
 	router.GET("id/:id", cc.getCourseById)
 	router.GET("name/:name", cc.getCourseByName)
 	router.POST("", cc.addCourse)
