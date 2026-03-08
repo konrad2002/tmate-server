@@ -45,6 +45,7 @@ func HandlerFunc(userService *service.UserService) gin.HandlerFunc {
 				return
 			}
 
+			// allows access to methods that explicitly check for basic auth, e.g. for course spots reduction
 			c.Set("authType", "Basic")
 
 			c.Next()

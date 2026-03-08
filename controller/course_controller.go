@@ -32,7 +32,10 @@ func (cc *CourseController) RegisterRoutes(rg *gin.RouterGroup) {
 
 	router.GET("id/:id", cc.getCourseById)
 	router.GET("name/:name", cc.getCourseByName)
+
 	router.POST("", cc.addCourse)
+	router.POST("id/:id/reduce_spots", cc.reduceSpots)
+
 	router.PUT(":id", cc.updateCourse)
 	router.DELETE(":id", cc.deleteCourse)
 }
@@ -99,6 +102,33 @@ func (cc *CourseController) addCourse(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusCreated, r)
+}
+
+func (cc *CourseController) reduceSpots(c *gin.Context) {
+	u, _ := c.Get("currentUser")
+	t, _ := c.Get("authType")
+	if t != "Basic" {
+		u2 := u.(dto.UserInfoDto)
+		if !u2.Permissions.CourseManagement {
+			c.IndentedJSON(http.StatusForbidden, gin.H{"message": "no course management permissions"})
+			return
+		}
+	}
+
+	id, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid id"})
+		return
+	}
+
+	r, err := cc.courseService.ReduceSpotsInCourse(id)
+	if err != nil {
+		println(err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, r)
 }
 
 func (cc *CourseController) updateCourse(c *gin.Context) {

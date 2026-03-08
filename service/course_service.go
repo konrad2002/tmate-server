@@ -33,6 +33,17 @@ func (cs *CourseService) AddCourse(course model.Course) (model.Course, error) {
 	return cs.courseRepository.SaveCourse(course)
 }
 
+func (cs *CourseService) ReduceSpotsInCourse(courseId primitive.ObjectID) (model.Course, error) {
+	c, err := cs.GetById(courseId)
+	if err != nil {
+		return model.Course{}, err
+	}
+
+	c.FreeSpots--
+
+	return cs.UpdateCourse(c)
+}
+
 func (cs *CourseService) UpdateCourse(course model.Course) (model.Course, error) {
 	return cs.courseRepository.UpdateCourse(course)
 }
